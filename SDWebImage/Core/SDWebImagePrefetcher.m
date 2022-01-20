@@ -15,36 +15,45 @@
     @public
     // Though current implementation, `SDWebImageManager` completion block is always on main queue. But however, there is no guarantee in docs. And we may introduce config to specify custom queue in the future.
     // These value are just used as incrementing counter, keep thread-safe using memory_order_relaxed for performance.
+    /// 虽然当前实现，但' SDWebImageManager '完成块总是在主队列上。但是，在文档中并没有保证。将来我们可能会引入config来指定自定义队列。
+    /// 这些值只是用作递增计数器，为了提高性能，使用memory_order_relaxed保持线程安全
     atomic_ulong _skippedCount;
     atomic_ulong _finishedCount;
     atomic_flag  _isAllFinished;
     
     unsigned long _totalCount;
     
-    // Used to ensure NSPointerArray thread safe
+    // Used to ensure NSPointerArray thread safe - 用来确保NSPointerArray线程安全
     SD_LOCK_DECLARE(_prefetchOperationsLock);
     SD_LOCK_DECLARE(_loadOperationsLock);
 }
-
+/// 预获取链接数组
 @property (nonatomic, copy, readwrite) NSArray<NSURL *> *urls;
+/// 加载操作数组
 @property (nonatomic, strong) NSPointerArray *loadOperations;
+/// 预获取数组
 @property (nonatomic, strong) NSPointerArray *prefetchOperations;
+/// 预获取处理器
 @property (nonatomic, weak) SDWebImagePrefetcher *prefetcher;
+/// 预获取完成block
 @property (nonatomic, copy, nullable) SDWebImagePrefetcherCompletionBlock completionBlock;
+/// 进度block
 @property (nonatomic, copy, nullable) SDWebImagePrefetcherProgressBlock progressBlock;
 
 @end
 
 @interface SDWebImagePrefetcher ()
-
+/// 网络图像管理类
 @property (strong, nonatomic, nonnull) SDWebImageManager *manager;
+/// 运行中的预获取标志集合
 @property (strong, atomic, nonnull) NSMutableSet<SDWebImagePrefetchToken *> *runningTokens;
+/// 预获取队列
 @property (strong, nonatomic, nonnull) NSOperationQueue *prefetchQueue;
 
 @end
 
 @implementation SDWebImagePrefetcher
-
+/// 共享单例
 + (nonnull instancetype)sharedImagePrefetcher {
     static dispatch_once_t once;
     static id instance;
@@ -133,10 +142,12 @@
                     }
                     
                     // Current operation finished
+                    /// 当前操作结束
                     [self callProgressBlockForToken:token imageURL:imageURL];
                     
                     if (atomic_load_explicit(&(token->_finishedCount), memory_order_relaxed) == token->_totalCount) {
                         // All finished
+                        /// 所有都完成
                         if (!atomic_flag_test_and_set_explicit(&(token->_isAllFinished), memory_order_relaxed)) {
                             [self callCompletionBlockForToken:token];
                             [self removeRunningToken:token];

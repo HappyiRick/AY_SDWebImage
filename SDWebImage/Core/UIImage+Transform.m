@@ -22,21 +22,26 @@ static inline CGRect SDCGRectFitWithScaleMode(CGRect rect, CGSize size, SDImageS
     size.height = size.height < 0 ? -size.height : size.height;
     CGPoint center = CGPointMake(CGRectGetMidX(rect), CGRectGetMidY(rect));
     switch (scaleMode) {
+            /// 按像素匹配或填充
         case SDImageScaleModeAspectFit:
         case SDImageScaleModeAspectFill: {
+            /// 如果有小于0.01的边
             if (rect.size.width < 0.01 || rect.size.height < 0.01 ||
                 size.width < 0.01 || size.height < 0.01) {
                 rect.origin = center;
                 rect.size = CGSizeZero;
             } else {
+                /// 获取缩放因子
                 CGFloat scale;
                 if (scaleMode == SDImageScaleModeAspectFit) {
+                    /// 适配情况下比例因子取大的
                     if (size.width / size.height < rect.size.width / rect.size.height) {
                         scale = rect.size.height / size.height;
                     } else {
                         scale = rect.size.width / size.width;
                     }
                 } else {
+                    /// 绝对情况下取小的
                     if (size.width / size.height < rect.size.width / rect.size.height) {
                         scale = rect.size.width / size.width;
                     } else {
@@ -59,6 +64,7 @@ static inline CGRect SDCGRectFitWithScaleMode(CGRect rect, CGSize size, SDImageS
 
 static inline UIColor * SDGetColorFromPixel(Pixel_8888 pixel, CGBitmapInfo bitmapInfo) {
     // Get alpha info, byteOrder info
+    /// 获取alpha信息，byteOrder信息
     CGImageAlphaInfo alphaInfo = bitmapInfo & kCGBitmapAlphaInfoMask;
     CGBitmapInfo byteOrderInfo = bitmapInfo & kCGBitmapByteOrderMask;
     CGFloat r = 0, g = 0, b = 0, a = 1;
@@ -166,6 +172,7 @@ static inline UIColor * SDGetColorFromPixel(Pixel_8888 pixel, CGBitmapInfo bitma
 
 #if SD_UIKIT || SD_MAC
 // Create-Rule, caller should call CGImageRelease
+/// 创建规则，调用者应该调用CGImageRelease
 static inline CGImageRef _Nullable SDCreateCGImageFromCIImage(CIImage * _Nonnull ciImage) {
     CGImageRef imageRef = NULL;
     if (@available(iOS 10, macOS 10.12, tvOS 10, *)) {
@@ -295,7 +302,6 @@ static inline CGImageRef _Nullable SDCreateCGImageFromCIImage(CIImage * _Nonnull
     size_t height = self.size.height;
     CGRect newRect = CGRectApplyAffineTransform(CGRectMake(0, 0, width, height),
                                                 fitSize ? CGAffineTransformMakeRotation(angle) : CGAffineTransformIdentity);
-
 #if SD_UIKIT || SD_MAC
     // CIImage shortcut
     if (self.CIImage) {
@@ -560,6 +566,7 @@ static inline CGImageRef _Nullable SDCreateCGImageFromCIImage(CIImage * _Nonnull
 #pragma mark - Image Effect
 
 // We use vImage to do box convolve for performance and support for watchOS. However, you can just use `CIFilter.CIGaussianBlur`. For other blur effect, use any filter in `CICategoryBlur`
+/// 我们使用vImage做盒卷积的性能和对watchOS的支持。但是，你可以使用“CIFilter.CIGaussianBlur”。对于其他模糊效果，使用CICategoryBlur中的任何滤镜
 - (nullable UIImage *)sd_blurredImageWithRadius:(CGFloat)blurRadius {
     if (self.size.width < 1 || self.size.height < 1) {
         return nil;
@@ -657,7 +664,6 @@ static inline CGImageRef _Nullable SDCreateCGImageFromCIImage(CIImage * _Nonnull
         }
         free(temp);
     }
-    
     CGImageRef effectCGImage = NULL;
     effectCGImage = vImageCreateCGImageFromBuffer(input, &format, NULL, NULL, kvImageNoAllocate, NULL);
     if (effectCGImage == NULL) {

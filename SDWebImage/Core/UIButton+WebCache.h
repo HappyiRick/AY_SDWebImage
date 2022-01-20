@@ -14,6 +14,7 @@
 
 /**
  * Integrates SDWebImage async downloading and caching of remote images with UIButton.
+ * 通过UIButton集成了SDWebImage异步下载和缓存远程图像
  */
 @interface UIButton (WebCache)
 
@@ -21,20 +22,22 @@
 
 /**
  * Get the current image URL.
+ * 获取当前图像URL
  */
 @property (nonatomic, strong, readonly, nullable) NSURL *sd_currentImageURL;
 
 /**
  * Get the image URL for a control state.
+ * 获取一个控制状态的图像链接
  * 
  * @param state Which state you want to know the URL for. The values are described in UIControlState.
  */
 - (nullable NSURL *)sd_imageURLForState:(UIControlState)state;
 
 /**
- * Set the button `image` with an `url`.
+ * Set the button `image` with an `url`. - 通过url设置按钮图像
  *
- * The download is asynchronous and cached.
+ * The download is asynchronous and cached. - 异步下载并缓存
  *
  * @param url   The url for the image.
  * @param state The state that uses the specified title. The values are described in UIControlState.
@@ -43,9 +46,9 @@
                   forState:(UIControlState)state NS_REFINED_FOR_SWIFT;
 
 /**
- * Set the button `image` with an `url` and a placeholder.
+ * Set the button `image` with an `url` and a placeholder. - 通过url和占位图设置按钮图像
  *
- * The download is asynchronous and cached.
+ * The download is asynchronous and cached. - 异步下载并缓存图像
  *
  * @param url         The url for the image.
  * @param state       The state that uses the specified title. The values are described in UIControlState.
@@ -57,9 +60,9 @@
           placeholderImage:(nullable UIImage *)placeholder NS_REFINED_FOR_SWIFT;
 
 /**
- * Set the button `image` with an `url`, placeholder and custom options.
+ * Set the button `image` with an `url`, placeholder and custom options. - 通过url、占位图和常用选项设置按钮图像
  *
- * The download is asynchronous and cached.
+ * The download is asynchronous and cached. - 异步下载并缓存图像
  *
  * @param url         The url for the image.
  * @param state       The state that uses the specified title. The values are described in UIControlState.
@@ -72,9 +75,9 @@
                    options:(SDWebImageOptions)options NS_REFINED_FOR_SWIFT;
 
 /**
- * Set the button `image` with an `url`, placeholder, custom options and context.
+ * Set the button `image` with an `url`, placeholder, custom options and context. - 通过url、占位图、常用选项和上下文设置按钮图像
  *
- * The download is asynchronous and cached.
+ * The download is asynchronous and cached. - 异步下载并缓存
  *
  * @param url         The url for the image.
  * @param state       The state that uses the specified title. The values are described in UIControlState.
@@ -89,9 +92,9 @@
                    context:(nullable SDWebImageContext *)context;
 
 /**
- * Set the button `image` with an `url`.
+ * Set the button `image` with an `url`. - 通过url设置按钮图像
  *
- * The download is asynchronous and cached.
+ * The download is asynchronous and cached. - 异步下载并缓存
  *
  * @param url            The url for the image.
  * @param state          The state that uses the specified title. The values are described in UIControlState.
@@ -106,9 +109,9 @@
                  completed:(nullable SDExternalCompletionBlock)completedBlock;
 
 /**
- * Set the button `image` with an `url`, placeholder.
+ * Set the button `image` with an `url`, placeholder. - 通过url和占位图设置按钮图像
  *
- * The download is asynchronous and cached.
+ * The download is asynchronous and cached. - 异步下载并缓存
  *
  * @param url            The url for the image.
  * @param state          The state that uses the specified title. The values are described in UIControlState.
@@ -125,9 +128,9 @@
                  completed:(nullable SDExternalCompletionBlock)completedBlock NS_REFINED_FOR_SWIFT;
 
 /**
- * Set the button `image` with an `url`, placeholder and custom options.
+ * Set the button `image` with an `url`, placeholder and custom options. - 通过url、占位图和常用选项设置按钮图像
  *
- * The download is asynchronous and cached.
+ * The download is asynchronous and cached. - 异步下载并缓存
  *
  * @param url            The url for the image.
  * @param state          The state that uses the specified title. The values are described in UIControlState.
@@ -146,9 +149,9 @@
                  completed:(nullable SDExternalCompletionBlock)completedBlock;
 
 /**
- * Set the button `image` with an `url`, placeholder and custom options.
+ * Set the button `image` with an `url`, placeholder and custom options. - 通过url、占位图和常用选项设置按钮图像
  *
- * The download is asynchronous and cached.
+ * The download is asynchronous and cached. - 异步下载并缓存
  *
  * @param url            The url for the image.
  * @param state          The state that uses the specified title. The values are described in UIControlState.
@@ -170,9 +173,9 @@
                  completed:(nullable SDExternalCompletionBlock)completedBlock;
 
 /**
- * Set the button `image` with an `url`, placeholder, custom options and context.
+ * Set the button `image` with an `url`, placeholder, custom options and context. - 通过url、占位图、常用选项和上下文设置按钮图像
  *
- * The download is asynchronous and cached.
+ * The download is asynchronous and cached. - 异步下载并缓存
  *
  * @param url            The url for the image.
  * @param state          The state that uses the specified title. The values are described in UIControlState.
@@ -198,21 +201,21 @@
 #pragma mark - Background Image
 
 /**
- * Get the current background image URL.
+ * Get the current background image URL. - 获取当前按钮背景图像的url
  */
 @property (nonatomic, strong, readonly, nullable) NSURL *sd_currentBackgroundImageURL;
 
 /**
- * Get the background image URL for a control state.
+ * Get the background image URL for a control state. - 获取控制状态的背景图像url
  * 
  * @param state Which state you want to know the URL for. The values are described in UIControlState.
  */
 - (nullable NSURL *)sd_backgroundImageURLForState:(UIControlState)state;
 
 /**
- * Set the button `backgroundImage` with an `url`.
+ * Set the button `backgroundImage` with an `url`. - 通过url设置按钮背景图像
  *
- * The download is asynchronous and cached.
+ * The download is asynchronous and cached. - 异步下载并缓存
  *
  * @param url   The url for the image.
  * @param state The state that uses the specified title. The values are described in UIControlState.
@@ -221,9 +224,9 @@
                             forState:(UIControlState)state NS_REFINED_FOR_SWIFT;
 
 /**
- * Set the button `backgroundImage` with an `url` and a placeholder.
+ * Set the button `backgroundImage` with an `url` and a placeholder. - 通过url、占位图设置按钮背景图像
  *
- * The download is asynchronous and cached.
+ * The download is asynchronous and cached. - 异步下载并缓存
  *
  * @param url         The url for the image.
  * @param state       The state that uses the specified title. The values are described in UIControlState.
@@ -235,7 +238,7 @@
                     placeholderImage:(nullable UIImage *)placeholder NS_REFINED_FOR_SWIFT;
 
 /**
- * Set the button `backgroundImage` with an `url`, placeholder and custom options.
+ * Set the button `backgroundImage` with an `url`, placeholder and custom options. - 通过url、占位图和常用选项设置按钮背景图像
  *
  * The download is asynchronous and cached.
  *
@@ -373,12 +376,12 @@
 #pragma mark - Cancel
 
 /**
- * Cancel the current image download
+ * Cancel the current image download - 取消当前图像下载
  */
 - (void)sd_cancelImageLoadForState:(UIControlState)state;
 
 /**
- * Cancel the current backgroundImage download
+ * Cancel the current backgroundImage download - 取消当前背景图像下载
  */
 - (void)sd_cancelBackgroundImageLoadForState:(UIControlState)state;
 

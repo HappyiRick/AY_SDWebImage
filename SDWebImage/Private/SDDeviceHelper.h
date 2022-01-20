@@ -9,10 +9,11 @@
 #import <Foundation/Foundation.h>
 #import "SDWebImageCompat.h"
 
-/// Device information helper methods
+/// Device information helper methods - 硬件信息方法
 @interface SDDeviceHelper : NSObject
-
+/// 总内存
 + (NSUInteger)totalMemory;
+/// 闲置内存
 + (NSUInteger)freeMemory;
 
 @end

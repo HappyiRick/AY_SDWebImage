@@ -9,6 +9,7 @@
 #import <Foundation/Foundation.h>
 
 /// A protocol represents cancelable operation.
+/// 标识操作可取消的协议
 @protocol SDWebImageOperation <NSObject>
 
 - (void)cancel;
@@ -16,6 +17,7 @@
 @end
 
 /// NSOperation conform to `SDWebImageOperation`.
+/// 遵守`SDWebImageOperation`协议的NSOperation
 @interface NSOperation (SDWebImageOperation) <SDWebImageOperation>
 
 @end

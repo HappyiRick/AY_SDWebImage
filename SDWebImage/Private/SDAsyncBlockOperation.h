@@ -12,6 +12,7 @@
 typedef void (^SDAsyncBlock)(SDAsyncBlockOperation * __nonnull asyncOperation);
 
 /// A async block operation, success after you call `completer` (not like `NSBlockOperation` which is for sync block, success on return)
+/// 一个异步块操作，你调用completer后会成功(不像NSBlockOperation，它是同步block，成功返回)
 @interface SDAsyncBlockOperation : NSOperation
 
 - (nonnull instancetype)initWithBlock:(nonnull SDAsyncBlock)block;

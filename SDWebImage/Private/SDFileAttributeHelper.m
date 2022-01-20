@@ -14,6 +14,7 @@
     int flags = follow? 0 : XATTR_NOFOLLOW;
     
     // get size of name list
+    /// 获取名称列表的长度
     ssize_t nameBuffLen = listxattr([path fileSystemRepresentation], NULL, 0, flags);
     if (nameBuffLen == -1) {
         if (err) *err = [NSError errorWithDomain:NSPOSIXErrorDomain code:errno userInfo:
@@ -28,10 +29,12 @@
     } else if (nameBuffLen == 0) return @[];
     
     // get name list
+    /// 获取名称列表
     NSMutableData *nameBuff = [NSMutableData dataWithLength:nameBuffLen];
     listxattr([path fileSystemRepresentation], [nameBuff mutableBytes], nameBuffLen, flags);
     
     // convert to array
+    /// 转化成数组
     NSMutableArray * names = [NSMutableArray arrayWithCapacity:5];
     char *nextName, *endOfNames = [nameBuff mutableBytes] + nameBuffLen;
     for(nextName = [nameBuff mutableBytes]; nextName < endOfNames; nextName += 1+strlen(nextName))
@@ -42,7 +45,7 @@
 + (BOOL)hasExtendedAttribute:(NSString *)name atPath:(NSString *)path traverseLink:(BOOL)follow error:(NSError **)err {
     int flags = follow? 0 : XATTR_NOFOLLOW;
     
-    // get size of name list
+    // get size of name list - 获取名称列表的长度
     ssize_t nameBuffLen = listxattr([path fileSystemRepresentation], NULL, 0, flags);
     if (nameBuffLen == -1) {
         if (err) *err = [NSError errorWithDomain:NSPOSIXErrorDomain code:errno userInfo:
@@ -56,11 +59,11 @@
         return NO;
     } else if (nameBuffLen == 0) return NO;
     
-    // get name list
+    // get name list - 获取名称列表
     NSMutableData *nameBuff = [NSMutableData dataWithLength:nameBuffLen];
     listxattr([path fileSystemRepresentation], [nameBuff mutableBytes], nameBuffLen, flags);
     
-    // find our name
+    // find our name - 找到目标名称
     char *nextName, *endOfNames = [nameBuff mutableBytes] + nameBuffLen;
     for(nextName = [nameBuff mutableBytes]; nextName < endOfNames; nextName += 1+strlen(nextName))
         if (strcmp(nextName, [name UTF8String]) == 0) return YES;
@@ -69,7 +72,7 @@
 
 + (NSData *)extendedAttribute:(NSString *)name atPath:(NSString *)path traverseLink:(BOOL)follow error:(NSError **)err {
     int flags = follow? 0 : XATTR_NOFOLLOW;
-    // get length
+    // get length - 获取长度
     ssize_t attrLen = getxattr([path fileSystemRepresentation], [name UTF8String], NULL, 0, 0, flags);
     if (attrLen == -1) {
         if (err) *err = [NSError errorWithDomain:NSPOSIXErrorDomain code:errno userInfo:
@@ -84,7 +87,7 @@
         return nil;
     }
     
-    // get attribute data
+    // get attribute data - 获取属性数据
     NSMutableData *attrData = [NSMutableData dataWithLength:attrLen];
     getxattr([path fileSystemRepresentation], [name UTF8String], [attrData mutableBytes], attrLen, 0, flags);
     return attrData;

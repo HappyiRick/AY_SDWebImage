@@ -14,15 +14,16 @@
 #import "SDInternalMacros.h"
 
 @interface SDImageCodersManager ()
-
+/// 私有变量
 @property (nonatomic, strong, nonnull) NSMutableArray<id<SDImageCoder>> *imageCoders;
 
 @end
 
 @implementation SDImageCodersManager {
+    /// 锁的宏
     SD_LOCK_DECLARE(_codersLock);
 }
-
+/// 创建单例
 + (nonnull instancetype)sharedManager {
     static dispatch_once_t once;
     static id instance;
@@ -31,7 +32,7 @@
     });
     return instance;
 }
-
+/// 默认初始化
 - (instancetype)init {
     if (self = [super init]) {
         // initialize with default coders
@@ -40,14 +41,14 @@
     }
     return self;
 }
-
+/// 重写coders getter方法
 - (NSArray<id<SDImageCoder>> *)coders {
     SD_LOCK(_codersLock);
     NSArray<id<SDImageCoder>> *coders = [_imageCoders copy];
     SD_UNLOCK(_codersLock);
     return coders;
 }
-
+/// 重写coders setter方法
 - (void)setCoders:(NSArray<id<SDImageCoder>> *)coders {
     SD_LOCK(_codersLock);
     [_imageCoders removeAllObjects];
@@ -58,8 +59,9 @@
 }
 
 #pragma mark - Coder IO operations
-
+/// 添加编码器
 - (void)addCoder:(nonnull id<SDImageCoder>)coder {
+    /// 如果不遵守编码器protocol则终止
     if (![coder conformsToProtocol:@protocol(SDImageCoder)]) {
         return;
     }
@@ -67,8 +69,9 @@
     [_imageCoders addObject:coder];
     SD_UNLOCK(_codersLock);
 }
-
+/// 删除编码器
 - (void)removeCoder:(nonnull id<SDImageCoder>)coder {
+    /// 如果不遵守编码器protocol则终止
     if (![coder conformsToProtocol:@protocol(SDImageCoder)]) {
         return;
     }
@@ -78,6 +81,7 @@
 }
 
 #pragma mark - SDImageCoder
+/// 是否可以解码数据
 - (BOOL)canDecodeFromData:(NSData *)data {
     NSArray<id<SDImageCoder>> *coders = self.coders;
     for (id<SDImageCoder> coder in coders.reverseObjectEnumerator) {
@@ -87,7 +91,7 @@
     }
     return NO;
 }
-
+/// 是否支持编码格式
 - (BOOL)canEncodeToFormat:(SDImageFormat)format {
     NSArray<id<SDImageCoder>> *coders = self.coders;
     for (id<SDImageCoder> coder in coders.reverseObjectEnumerator) {
@@ -97,7 +101,7 @@
     }
     return NO;
 }
-
+/// 从数据中解码图片
 - (UIImage *)decodedImageWithData:(NSData *)data options:(nullable SDImageCoderOptions *)options {
     if (!data) {
         return nil;
@@ -113,7 +117,7 @@
     
     return image;
 }
-
+/// 编码图片为数据
 - (NSData *)encodedDataWithImage:(UIImage *)image format:(SDImageFormat)format options:(nullable SDImageCoderOptions *)options {
     if (!image) {
         return nil;

@@ -11,16 +11,19 @@
 #import "UIImage+MemoryCacheCost.h"
 #import "SDInternalMacros.h"
 
+/// 内存缓存上下文
 static void * SDMemoryCacheContext = &SDMemoryCacheContext;
 
 @interface SDMemoryCache <KeyType, ObjectType> () {
 #if SD_UIKIT
+    /// 若缓存锁
     SD_LOCK_DECLARE(_weakCacheLock); // a lock to keep the access to `weakCache` thread-safe
 #endif
 }
-
+/// 缓存配置
 @property (nonatomic, strong, nullable) SDImageCacheConfig *config;
 #if SD_UIKIT
+/// 弱缓存
 @property (nonatomic, strong, nonnull) NSMapTable<KeyType, ObjectType> *weakCache; // strong-weak cache
 #endif
 @end
@@ -74,6 +77,7 @@ static void * SDMemoryCacheContext = &SDMemoryCacheContext;
 }
 
 // Current this seems no use on macOS (macOS use virtual memory and do not clear cache when memory warning). So we only override on iOS/tvOS platform.
+/// 仅支持 iOS/tvOS
 #if SD_UIKIT
 - (void)didReceiveMemoryWarning:(NSNotification *)notification {
     // Only remove cache, but keep weak cache

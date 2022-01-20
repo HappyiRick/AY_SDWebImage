@@ -14,6 +14,7 @@
 
 /**
  The value specify that the image progress unit count cannot be determined because the progressBlock is not been called.
+ 该值指定不能确定图像进度单位计数，因为progressBlock还没有被调用
  */
 FOUNDATION_EXPORT const int64_t SDWebImageProgressUnitCountUnknown; /* 1LL */
 
@@ -21,11 +22,12 @@ typedef void(^SDSetImageBlock)(UIImage * _Nullable image, NSData * _Nullable ima
 
 /**
  Integrates SDWebImage async downloading and caching of remote images with UIView subclass.
+ 为UIView子类集成SDWebImage异步下载和缓存远程图片
  */
 @interface UIView (WebCache)
 
 /**
- * Get the current image URL.
+ * Get the current image URL. - 获取当前图像URL
  *
  * @note Note that because of the limitations of categories this property can get out of sync if you use setImage: directly.
  */
@@ -36,6 +38,8 @@ typedef void(^SDSetImageBlock)(UIImage * _Nullable image, NSData * _Nullable ima
  * See more about this in `SDWebImageContextSetImageOperationKey`.
  * If you cancel current image load, the key will be set to nil.
  * @note You can use method `UIView+WebCacheOperation` to investigate different queries' operation.
+ *
+ * 图像操作键，用来标识对于一个视图实力的不同查询
  */
 @property (nonatomic, strong, readonly, nullable) NSString *sd_latestOperationKey;
 
@@ -45,13 +49,15 @@ typedef void(^SDSetImageBlock)(UIImage * _Nullable image, NSData * _Nullable ima
  * @note You can use Key-Value Observing on the progress, but you should take care that the change to progress is from a background queue during download(the same as progressBlock). If you want to using KVO and update the UI, make sure to dispatch on the main queue. And it's recommend to use some KVO libs like KVOController because it's more safe and easy to use.
  * @note The getter will create a progress instance if the value is nil. But by default, we don't create one. If you need to use Key-Value Observing, you must trigger the getter or set a custom progress instance before the loading start. The default value is nil.
  * @note Note that because of the limitations of categories this property can get out of sync if you update the progress directly.
+ *
+ * 和视图相关的当前图像加载进度,单位计数是接收到的大小和下载的例外大小
  */
 @property (nonatomic, strong, null_resettable) NSProgress *sd_imageProgress;
 
 /**
- * Set the imageView `image` with an `url` and optionally a placeholder image.
+ * Set the imageView `image` with an `url` and optionally a placeholder image. - 通过url和可选的占位图设置imageView图片
  *
- * The download is asynchronous and cached.
+ * The download is asynchronous and cached. - 异步下载和缓存
  *
  * @param url            The url for the image.
  * @param placeholder    The image to be set initially, until the image request finishes.
@@ -82,6 +88,7 @@ typedef void(^SDSetImageBlock)(UIImage * _Nullable image, NSData * _Nullable ima
 
 /**
  * Cancel the current image load
+ * 取消当前图像加载
  */
 - (void)sd_cancelCurrentImageLoad;
 
@@ -92,6 +99,7 @@ typedef void(^SDSetImageBlock)(UIImage * _Nullable image, NSData * _Nullable ima
 /**
  The image transition when image load finished. See `SDWebImageTransition`.
  If you specify nil, do not do transition. Defaults to nil.
+ 图像加载完毕时的转场
  */
 @property (nonatomic, strong, nullable) SDWebImageTransition *sd_imageTransition;
 
@@ -101,6 +109,7 @@ typedef void(^SDSetImageBlock)(UIImage * _Nullable image, NSData * _Nullable ima
  The image indicator during the image loading. If you do not need indicator, specify nil. Defaults to nil
  The setter will remove the old indicator view and add new indicator view to current view's subview.
  @note Because this is UI related, you should access only from the main queue.
+ 图像加载过程中的指示器
  */
 @property (nonatomic, strong, nullable) id<SDWebImageIndicator> sd_imageIndicator;
 

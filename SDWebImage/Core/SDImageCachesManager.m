@@ -12,15 +12,16 @@
 #import "SDInternalMacros.h"
 
 @interface SDImageCachesManager ()
-
+/// 图像缓存数组
 @property (nonatomic, strong, nonnull) NSMutableArray<id<SDImageCache>> *imageCaches;
 
 @end
 
 @implementation SDImageCachesManager {
+    /// 缓存锁
     SD_LOCK_DECLARE(_cachesLock);
 }
-
+/// 单例
 + (SDImageCachesManager *)sharedManager {
     static dispatch_once_t onceToken;
     static SDImageCachesManager *manager;
@@ -29,14 +30,19 @@
     });
     return manager;
 }
-
+/// 初始化
 - (instancetype)init {
     self = [super init];
     if (self) {
+        /// 查询默认为顺序处理
         self.queryOperationPolicy = SDImageCachesManagerOperationPolicySerial;
+        /// 存储默认为只处理优先级最高的
         self.storeOperationPolicy = SDImageCachesManagerOperationPolicyHighestOnly;
+        /// 删除默认为并发处理
         self.removeOperationPolicy = SDImageCachesManagerOperationPolicyConcurrent;
+        /// 包含默认为为顺序处理
         self.containsOperationPolicy = SDImageCachesManagerOperationPolicySerial;
+        /// 清除默认为并发处理
         self.clearOperationPolicy = SDImageCachesManagerOperationPolicyConcurrent;
         // initialize with default image caches
         _imageCaches = [NSMutableArray arrayWithObject:[SDImageCache sharedImageCache]];
@@ -45,6 +51,7 @@
     return self;
 }
 
+/// getter && setter
 - (NSArray<id<SDImageCache>> *)caches {
     SD_LOCK(_cachesLock);
     NSArray<id<SDImageCache>> *caches = [_imageCaches copy];
@@ -86,7 +93,7 @@
 - (id<SDWebImageOperation>)queryImageForKey:(NSString *)key options:(SDWebImageOptions)options context:(SDWebImageContext *)context completion:(SDImageCacheQueryCompletionBlock)completionBlock {
     return [self queryImageForKey:key options:options context:context cacheType:SDImageCacheTypeAll completion:completionBlock];
 }
-
+/// 查找操作
 - (id<SDWebImageOperation>)queryImageForKey:(NSString *)key options:(SDWebImageOptions)options context:(SDWebImageContext *)context cacheType:(SDImageCacheType)cacheType completion:(SDImageCacheQueryCompletionBlock)completionBlock {
     if (!key) {
         return nil;
@@ -99,16 +106,19 @@
         return [caches.firstObject queryImageForKey:key options:options context:context cacheType:cacheType completion:completionBlock];
     }
     switch (self.queryOperationPolicy) {
+            /// 最高优先级
         case SDImageCachesManagerOperationPolicyHighestOnly: {
             id<SDImageCache> cache = caches.lastObject;
             return [cache queryImageForKey:key options:options context:context cacheType:cacheType completion:completionBlock];
         }
             break;
+            /// 最低优先级
         case SDImageCachesManagerOperationPolicyLowestOnly: {
             id<SDImageCache> cache = caches.firstObject;
             return [cache queryImageForKey:key options:options context:context cacheType:cacheType completion:completionBlock];
         }
             break;
+            /// 并行处理
         case SDImageCachesManagerOperationPolicyConcurrent: {
             SDImageCachesManagerOperation *operation = [SDImageCachesManagerOperation new];
             [operation beginWithTotalCount:caches.count];
@@ -116,6 +126,7 @@
             return operation;
         }
             break;
+            /// 顺序处理
         case SDImageCachesManagerOperationPolicySerial: {
             SDImageCachesManagerOperation *operation = [SDImageCachesManagerOperation new];
             [operation beginWithTotalCount:caches.count];
@@ -128,7 +139,7 @@
             break;
     }
 }
-
+/// 存储图片
 - (void)storeImage:(UIImage *)image imageData:(NSData *)imageData forKey:(NSString *)key cacheType:(SDImageCacheType)cacheType completion:(SDWebImageNoParamsBlock)completionBlock {
     if (!key) {
         return;
@@ -142,22 +153,26 @@
         return;
     }
     switch (self.storeOperationPolicy) {
+            /// 最高优先级
         case SDImageCachesManagerOperationPolicyHighestOnly: {
             id<SDImageCache> cache = caches.lastObject;
             [cache storeImage:image imageData:imageData forKey:key cacheType:cacheType completion:completionBlock];
         }
             break;
+            /// 最低优先级
         case SDImageCachesManagerOperationPolicyLowestOnly: {
             id<SDImageCache> cache = caches.firstObject;
             [cache storeImage:image imageData:imageData forKey:key cacheType:cacheType completion:completionBlock];
         }
             break;
+            /// 并行处理
         case SDImageCachesManagerOperationPolicyConcurrent: {
             SDImageCachesManagerOperation *operation = [SDImageCachesManagerOperation new];
             [operation beginWithTotalCount:caches.count];
             [self concurrentStoreImage:image imageData:imageData forKey:key cacheType:cacheType completion:completionBlock enumerator:caches.reverseObjectEnumerator operation:operation];
         }
             break;
+            /// 顺序处理
         case SDImageCachesManagerOperationPolicySerial: {
             [self serialStoreImage:image imageData:imageData forKey:key cacheType:cacheType completion:completionBlock enumerator:caches.reverseObjectEnumerator];
         }
@@ -166,7 +181,7 @@
             break;
     }
 }
-
+/// 删除图片
 - (void)removeImageForKey:(NSString *)key cacheType:(SDImageCacheType)cacheType completion:(SDWebImageNoParamsBlock)completionBlock {
     if (!key) {
         return;
@@ -180,22 +195,26 @@
         return;
     }
     switch (self.removeOperationPolicy) {
+            /// 最高优先级
         case SDImageCachesManagerOperationPolicyHighestOnly: {
             id<SDImageCache> cache = caches.lastObject;
             [cache removeImageForKey:key cacheType:cacheType completion:completionBlock];
         }
             break;
+            /// 最低优先级
         case SDImageCachesManagerOperationPolicyLowestOnly: {
             id<SDImageCache> cache = caches.firstObject;
             [cache removeImageForKey:key cacheType:cacheType completion:completionBlock];
         }
             break;
+            /// 并行处理
         case SDImageCachesManagerOperationPolicyConcurrent: {
             SDImageCachesManagerOperation *operation = [SDImageCachesManagerOperation new];
             [operation beginWithTotalCount:caches.count];
             [self concurrentRemoveImageForKey:key cacheType:cacheType completion:completionBlock enumerator:caches.reverseObjectEnumerator operation:operation];
         }
             break;
+            /// 顺序处理
         case SDImageCachesManagerOperationPolicySerial: {
             [self serialRemoveImageForKey:key cacheType:cacheType completion:completionBlock enumerator:caches.reverseObjectEnumerator];
         }
@@ -204,7 +223,7 @@
             break;
     }
 }
-
+/// 包含处理
 - (void)containsImageForKey:(NSString *)key cacheType:(SDImageCacheType)cacheType completion:(SDImageCacheContainsCompletionBlock)completionBlock {
     if (!key) {
         return;
@@ -218,22 +237,26 @@
         return;
     }
     switch (self.clearOperationPolicy) {
+            /// 最高优先级
         case SDImageCachesManagerOperationPolicyHighestOnly: {
             id<SDImageCache> cache = caches.lastObject;
             [cache containsImageForKey:key cacheType:cacheType completion:completionBlock];
         }
             break;
+            /// 最低优先级
         case SDImageCachesManagerOperationPolicyLowestOnly: {
             id<SDImageCache> cache = caches.firstObject;
             [cache containsImageForKey:key cacheType:cacheType completion:completionBlock];
         }
             break;
+            /// 并行处理
         case SDImageCachesManagerOperationPolicyConcurrent: {
             SDImageCachesManagerOperation *operation = [SDImageCachesManagerOperation new];
             [operation beginWithTotalCount:caches.count];
             [self concurrentContainsImageForKey:key cacheType:cacheType completion:completionBlock enumerator:caches.reverseObjectEnumerator operation:operation];
         }
             break;
+            /// 顺序处理
         case SDImageCachesManagerOperationPolicySerial: {
             SDImageCachesManagerOperation *operation = [SDImageCachesManagerOperation new];
             [operation beginWithTotalCount:caches.count];
@@ -244,7 +267,7 @@
             break;
     }
 }
-
+/// 清理操作
 - (void)clearWithCacheType:(SDImageCacheType)cacheType completion:(SDWebImageNoParamsBlock)completionBlock {
     NSArray<id<SDImageCache>> *caches = self.caches;
     NSUInteger count = caches.count;
@@ -255,22 +278,26 @@
         return;
     }
     switch (self.clearOperationPolicy) {
+            /// 最高优先级
         case SDImageCachesManagerOperationPolicyHighestOnly: {
             id<SDImageCache> cache = caches.lastObject;
             [cache clearWithCacheType:cacheType completion:completionBlock];
         }
             break;
+            /// 最低优先级
         case SDImageCachesManagerOperationPolicyLowestOnly: {
             id<SDImageCache> cache = caches.firstObject;
             [cache clearWithCacheType:cacheType completion:completionBlock];
         }
             break;
+            /// 并行处理
         case SDImageCachesManagerOperationPolicyConcurrent: {
             SDImageCachesManagerOperation *operation = [SDImageCachesManagerOperation new];
             [operation beginWithTotalCount:caches.count];
             [self concurrentClearWithCacheType:cacheType completion:completionBlock enumerator:caches.reverseObjectEnumerator operation:operation];
         }
             break;
+            /// 顺序处理
         case SDImageCachesManagerOperationPolicySerial: {
             [self serialClearWithCacheType:cacheType completion:completionBlock enumerator:caches.reverseObjectEnumerator];
         }
@@ -281,7 +308,7 @@
 }
 
 #pragma mark - Concurrent Operation
-
+/// 并行查找图片
 - (void)concurrentQueryImageForKey:(NSString *)key options:(SDWebImageOptions)options context:(SDWebImageContext *)context cacheType:(SDImageCacheType)queryCacheType completion:(SDImageCacheQueryCompletionBlock)completionBlock enumerator:(NSEnumerator<id<SDImageCache>> *)enumerator operation:(SDImageCachesManagerOperation *)operation {
     NSParameterAssert(enumerator);
     NSParameterAssert(operation);
@@ -314,7 +341,7 @@
         }];
     }
 }
-
+/// 并行存储图片
 - (void)concurrentStoreImage:(UIImage *)image imageData:(NSData *)imageData forKey:(NSString *)key cacheType:(SDImageCacheType)cacheType completion:(SDWebImageNoParamsBlock)completionBlock enumerator:(NSEnumerator<id<SDImageCache>> *)enumerator operation:(SDImageCachesManagerOperation *)operation {
     NSParameterAssert(enumerator);
     NSParameterAssert(operation);
@@ -339,7 +366,7 @@
         }];
     }
 }
-
+/// 并行删除图片
 - (void)concurrentRemoveImageForKey:(NSString *)key cacheType:(SDImageCacheType)cacheType completion:(SDWebImageNoParamsBlock)completionBlock enumerator:(NSEnumerator<id<SDImageCache>> *)enumerator operation:(SDImageCachesManagerOperation *)operation {
     NSParameterAssert(enumerator);
     NSParameterAssert(operation);
@@ -364,7 +391,7 @@
         }];
     }
 }
-
+/// 并行包含图片
 - (void)concurrentContainsImageForKey:(NSString *)key cacheType:(SDImageCacheType)cacheType completion:(SDImageCacheContainsCompletionBlock)completionBlock enumerator:(NSEnumerator<id<SDImageCache>> *)enumerator operation:(SDImageCachesManagerOperation *)operation {
     NSParameterAssert(enumerator);
     NSParameterAssert(operation);
@@ -397,7 +424,7 @@
         }];
     }
 }
-
+/// 并行清理缓存
 - (void)concurrentClearWithCacheType:(SDImageCacheType)cacheType completion:(SDWebImageNoParamsBlock)completionBlock enumerator:(NSEnumerator<id<SDImageCache>> *)enumerator operation:(SDImageCachesManagerOperation *)operation {
     NSParameterAssert(enumerator);
     NSParameterAssert(operation);
@@ -424,7 +451,7 @@
 }
 
 #pragma mark - Serial Operation
-
+/// 顺序查询图片
 - (void)serialQueryImageForKey:(NSString *)key options:(SDWebImageOptions)options context:(SDWebImageContext *)context cacheType:(SDImageCacheType)queryCacheType completion:(SDImageCacheQueryCompletionBlock)completionBlock enumerator:(NSEnumerator<id<SDImageCache>> *)enumerator operation:(SDImageCachesManagerOperation *)operation {
     NSParameterAssert(enumerator);
     NSParameterAssert(operation);
@@ -461,7 +488,7 @@
         [self serialQueryImageForKey:key options:options context:context cacheType:queryCacheType completion:completionBlock enumerator:enumerator operation:operation];
     }];
 }
-
+/// 顺序存储图片
 - (void)serialStoreImage:(UIImage *)image imageData:(NSData *)imageData forKey:(NSString *)key cacheType:(SDImageCacheType)cacheType completion:(SDWebImageNoParamsBlock)completionBlock enumerator:(NSEnumerator<id<SDImageCache>> *)enumerator {
     NSParameterAssert(enumerator);
     id<SDImageCache> cache = enumerator.nextObject;
@@ -479,7 +506,7 @@
         [self serialStoreImage:image imageData:imageData forKey:key cacheType:cacheType completion:completionBlock enumerator:enumerator];
     }];
 }
-
+/// 顺序删除图片
 - (void)serialRemoveImageForKey:(NSString *)key cacheType:(SDImageCacheType)cacheType completion:(SDWebImageNoParamsBlock)completionBlock enumerator:(NSEnumerator<id<SDImageCache>> *)enumerator {
     NSParameterAssert(enumerator);
     id<SDImageCache> cache = enumerator.nextObject;
@@ -497,7 +524,7 @@
         [self serialRemoveImageForKey:key cacheType:cacheType completion:completionBlock enumerator:enumerator];
     }];
 }
-
+/// 顺序包含图片
 - (void)serialContainsImageForKey:(NSString *)key cacheType:(SDImageCacheType)cacheType completion:(SDImageCacheContainsCompletionBlock)completionBlock enumerator:(NSEnumerator<id<SDImageCache>> *)enumerator operation:(SDImageCachesManagerOperation *)operation {
     NSParameterAssert(enumerator);
     NSParameterAssert(operation);
@@ -534,7 +561,7 @@
         [self serialContainsImageForKey:key cacheType:cacheType completion:completionBlock enumerator:enumerator operation:operation];
     }];
 }
-
+/// 顺序清理缓存
 - (void)serialClearWithCacheType:(SDImageCacheType)cacheType completion:(SDWebImageNoParamsBlock)completionBlock enumerator:(NSEnumerator<id<SDImageCache>> *)enumerator {
     NSParameterAssert(enumerator);
     id<SDImageCache> cache = enumerator.nextObject;

@@ -11,7 +11,7 @@
 #import "SDInternalMacros.h"
 
 @interface SDImageLoadersManager ()
-
+/// 图像加载器数组
 @property (nonatomic, strong, nonnull) NSMutableArray<id<SDImageLoader>> *imageLoaders;
 
 @end

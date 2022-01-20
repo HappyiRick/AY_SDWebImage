@@ -93,6 +93,7 @@ static inline NSString * backgroundImageOperationKeyForState(UIControlState stat
                   progress:(nullable SDImageLoaderProgressBlock)progressBlock
                  completed:(nullable SDExternalCompletionBlock)completedBlock {
     if (!url) {
+        /// 如果url为空则删除该状态下的图像url
         [self.sd_imageURLStorage removeObjectForKey:imageURLKeyForState(state)];
     } else {
         self.sd_imageURLStorage[imageURLKeyForState(state)] = url;
@@ -178,6 +179,7 @@ static inline NSString * backgroundImageOperationKeyForState(UIControlState stat
                             progress:(nullable SDImageLoaderProgressBlock)progressBlock
                            completed:(nullable SDExternalCompletionBlock)completedBlock {
     if (!url) {
+        /// 没有传url则为删除该状态背景图先url
         [self.sd_imageURLStorage removeObjectForKey:backgroundImageURLKeyForState(state)];
     } else {
         self.sd_imageURLStorage[backgroundImageURLKeyForState(state)] = url;

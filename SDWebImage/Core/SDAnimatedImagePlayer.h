@@ -12,24 +12,25 @@
 
 typedef NS_ENUM(NSUInteger, SDAnimatedImagePlaybackMode) {
     /**
-     * From first to last frame and stop or next loop.
+     * From first to last frame and stop or next loop. - 顺序
      */
     SDAnimatedImagePlaybackModeNormal = 0,
     /**
-     * From last frame to first frame and stop or next loop.
+     * From last frame to first frame and stop or next loop. - 倒序
      */
     SDAnimatedImagePlaybackModeReverse,
     /**
-     * From first frame to last frame and reverse again, like reciprocating.
+     * From first frame to last frame and reverse again, like reciprocating. - 先正序再倒序
      */
     SDAnimatedImagePlaybackModeBounce,
     /**
-     * From last frame to first frame and reverse again, like reversed reciprocating.
+     * From last frame to first frame and reverse again, like reversed reciprocating. - 先倒序后正序
      */
     SDAnimatedImagePlaybackModeReversedBounce,
 };
 
 /// A player to control the playback of animated image, which can be used to drive Animated ImageView or any rendering usage, like CALayer/WatchKit/SwiftUI rendering.
+/// 一个用来控制动画图像播放的播放器，它可以用来驱动动画ImageView或任何渲染使用，如CALayer/WatchKit/SwiftUI渲染。
 @interface SDAnimatedImagePlayer : NSObject
 
 /// Current playing frame image. This value is KVO Compliance.
@@ -82,24 +83,30 @@ typedef NS_ENUM(NSUInteger, SDAnimatedImagePlaybackMode) {
 + (nullable instancetype)playerWithProvider:(nonnull id<SDAnimatedImageProvider>)provider;
 
 /// The handler block when current frame and index changed.
+/// 当前帧和索引改变时的处理块
 @property (nonatomic, copy, nullable) void (^animationFrameHandler)(NSUInteger index, UIImage * _Nonnull frame);
 
 /// The handler block when one loop count finished.
+/// 当循环次数结束时的处理块
 @property (nonatomic, copy, nullable) void (^animationLoopHandler)(NSUInteger loopCount);
 
 /// Return the status whether animation is playing.
+/// 返回状态指示动画是否播放完成
 @property (nonatomic, readonly) BOOL isPlaying;
 
 /// Start the animation. Or resume the previously paused animation.
+/// 开始动画，或重启之前暂停的动画
 - (void)startPlaying;
 
 /// Pause the animation. Keep the current frame index and loop count.
+/// 暂停动画，保持当前帧索引和循环数
 - (void)pausePlaying;
 
 /// Stop the animation. Reset the current frame index and loop count.
+/// 停止动画，重置当前帧索引和循环数
 - (void)stopPlaying;
 
-/// Seek to the desired frame index and loop count.
+/// Seek to the desired frame index and loop count. - 寻找所需的帧索引和循环计数。
 /// @note This can be used for advanced control like progressive loading, or skipping specify frames.
 /// @param index The frame index
 /// @param loopCount The loop count
@@ -107,6 +114,8 @@ typedef NS_ENUM(NSUInteger, SDAnimatedImagePlaybackMode) {
 
 /// Clear the frame cache buffer. The frame cache buffer size can be controlled by `maxBufferSize`.
 /// By default, when stop or pause the animation, the frame buffer is still kept to ready for the next restart
+/// 清除帧缓存缓冲区。帧缓存缓冲区的大小可以通过maxBufferSize来控制
+/// 默认情况下，当停止或暂停动画时，帧缓冲区仍然保持为下一次重启做好准备
 - (void)clearFrameBuffer;
 
 @end

@@ -14,6 +14,7 @@
 
 /**
  * Integrates SDWebImage async downloading and caching of remote images with NSButton.
+ * 通过NSButton集成了SDWebImage异步下载和缓存远程图像
  */
 @interface NSButton (WebCache)
 
@@ -21,22 +22,23 @@
 
 /**
  * Get the current image URL.
+ * 获取当前图像URL
  */
 @property (nonatomic, strong, readonly, nullable) NSURL *sd_currentImageURL;
 
 /**
- * Set the button `image` with an `url`.
+ * Set the button `image` with an `url`.  通过url设置按钮图像
  *
- * The download is asynchronous and cached.
+ * The download is asynchronous and cached. 下载异步且缓存
  *
  * @param url The url for the image.
  */
 - (void)sd_setImageWithURL:(nullable NSURL *)url NS_REFINED_FOR_SWIFT;
 
 /**
- * Set the button `image` with an `url` and a placeholder.
+ * Set the button `image` with an `url` and a placeholder. 通过url和占位图设置按钮图像
  *
- * The download is asynchronous and cached.
+ * The download is asynchronous and cached. 异步下载并缓存
  *
  * @param url         The url for the image.
  * @param placeholder The image to be set initially, until the image request finishes.
@@ -46,9 +48,9 @@
           placeholderImage:(nullable UIImage *)placeholder NS_REFINED_FOR_SWIFT;
 
 /**
- * Set the button `image` with an `url`, placeholder and custom options.
+ * Set the button `image` with an `url`, placeholder and custom options. 通过url、占位图和普通选项设置按钮图像
  *
- * The download is asynchronous and cached.
+ * The download is asynchronous and cached. 异步下载且缓存
  *
  * @param url         The url for the image.
  * @param placeholder The image to be set initially, until the image request finishes.
@@ -59,9 +61,9 @@
                    options:(SDWebImageOptions)options NS_REFINED_FOR_SWIFT;
 
 /**
- * Set the button `image` with an `url`, placeholder and custom options.
+ * Set the button `image` with an `url`, placeholder and custom options. 通过url、占位图和普通选项设置按钮图像
  *
- * The download is asynchronous and cached.
+ * The download is asynchronous and cached. 一步下载且缓存
  *
  * @param url         The url for the image.
  * @param placeholder The image to be set initially, until the image request finishes.
@@ -74,9 +76,9 @@
                    context:(nullable SDWebImageContext *)context;
 
 /**
- * Set the button `image` with an `url`.
+ * Set the button `image` with an `url`.  通过url设置图像
  *
- * The download is asynchronous and cached.
+ * The download is asynchronous and cached. 异步下载且缓存
  *
  * @param url            The url for the image.
  * @param completedBlock A block called when operation has been completed. This block has no return value
@@ -89,9 +91,9 @@
                  completed:(nullable SDExternalCompletionBlock)completedBlock;
 
 /**
- * Set the button `image` with an `url`, placeholder.
+ * Set the button `image` with an `url`, placeholder. 通过url、占位图设置
  *
- * The download is asynchronous and cached.
+ * The download is asynchronous and cached. 异步下载且缓存
  *
  * @param url            The url for the image.
  * @param placeholder    The image to be set initially, until the image request finishes.
@@ -106,9 +108,9 @@
                  completed:(nullable SDExternalCompletionBlock)completedBlock NS_REFINED_FOR_SWIFT;
 
 /**
- * Set the button `image` with an `url`, placeholder and custom options.
+ * Set the button `image` with an `url`, placeholder and custom options. - 通过url、占位图和选项设置按钮图像
  *
- * The download is asynchronous and cached.
+ * The download is asynchronous and cached. - 异步下载并缓存
  *
  * @param url            The url for the image.
  * @param placeholder    The image to be set initially, until the image request finishes.
@@ -125,9 +127,9 @@
                  completed:(nullable SDExternalCompletionBlock)completedBlock;
 
 /**
- * Set the button `image` with an `url`, placeholder and custom options.
+ * Set the button `image` with an `url`, placeholder and custom options. - 通过url、占位图和选项设置按钮图像
  *
- * The download is asynchronous and cached.
+ * The download is asynchronous and cached. - 异步下载并缓存
  *
  * @param url            The url for the image.
  * @param placeholder    The image to be set initially, until the image request finishes.
@@ -147,9 +149,9 @@
                  completed:(nullable SDExternalCompletionBlock)completedBlock;
 
 /**
- * Set the button `image` with an `url`, placeholder and custom options.
+ * Set the button `image` with an `url`, placeholder and custom options. - 通过url、占位图和选项配置设置按钮图像
  *
- * The download is asynchronous and cached.
+ * The download is asynchronous and cached. - 异步下载并缓存
  *
  * @param url            The url for the image.
  * @param placeholder    The image to be set initially, until the image request finishes.
@@ -173,23 +175,23 @@
 #pragma mark - Alternate Image
 
 /**
- * Get the current alternateImage URL.
+ * Get the current alternateImage URL. - 获取当前替代图像URL
  */
 @property (nonatomic, strong, readonly, nullable) NSURL *sd_currentAlternateImageURL;
 
 /**
- * Set the button `alternateImage` with an `url`.
+ * Set the button `alternateImage` with an `url`. - 通过url设置按钮替代图像
  *
- * The download is asynchronous and cached.
+ * The download is asynchronous and cached. - 异步下载并缓存
  *
  * @param url The url for the alternateImage.
  */
 - (void)sd_setAlternateImageWithURL:(nullable NSURL *)url NS_REFINED_FOR_SWIFT;
 
 /**
- * Set the button `alternateImage` with an `url` and a placeholder.
+ * Set the button `alternateImage` with an `url` and a placeholder. - 通过url和占位图设置按钮替换图像
  *
- * The download is asynchronous and cached.
+ * The download is asynchronous and cached. - 异步下载并缓存
  *
  * @param url         The url for the alternateImage.
  * @param placeholder The alternateImage to be set initially, until the alternateImage request finishes.
@@ -199,9 +201,9 @@
                    placeholderImage:(nullable UIImage *)placeholder NS_REFINED_FOR_SWIFT;
 
 /**
- * Set the button `alternateImage` with an `url`, placeholder and custom options.
+ * Set the button `alternateImage` with an `url`, placeholder and custom options. - 通过url、占位图和常用选项设置按钮替代图
  *
- * The download is asynchronous and cached.
+ * The download is asynchronous and cached. - 异步下载并缓存
  *
  * @param url         The url for the alternateImage.
  * @param placeholder The alternateImage to be set initially, until the alternateImage request finishes.
@@ -212,9 +214,9 @@
                             options:(SDWebImageOptions)options NS_REFINED_FOR_SWIFT;
 
 /**
- * Set the button `alternateImage` with an `url`, placeholder, custom options and context.
+ * Set the button `alternateImage` with an `url`, placeholder, custom options and context. - 通过URL、占位图、常用选项和上下文设置按钮替代图
  *
- * The download is asynchronous and cached.
+ * The download is asynchronous and cached. - 异步下载并缓存
  *
  * @param url         The url for the alternateImage.
  * @param placeholder The alternateImage to be set initially, until the alternateImage request finishes.
@@ -227,9 +229,9 @@
                             context:(nullable SDWebImageContext *)context;
 
 /**
- * Set the button `alternateImage` with an `url`.
+ * Set the button `alternateImage` with an `url`. - 通过url设置按钮替代图
  *
- * The download is asynchronous and cached.
+ * The download is asynchronous and cached. - 异步下载并缓存
  *
  * @param url            The url for the alternateImage.
  * @param completedBlock A block called when operation has been completed. This block has no return value
@@ -242,9 +244,9 @@
                           completed:(nullable SDExternalCompletionBlock)completedBlock;
 
 /**
- * Set the button `alternateImage` with an `url`, placeholder.
+ * Set the button `alternateImage` with an `url`, placeholder. - 通过url、占位图设置按钮替代图
  *
- * The download is asynchronous and cached.
+ * The download is asynchronous and cached. - 异步下载并缓存
  *
  * @param url            The url for the alternateImage.
  * @param placeholder    The alternateImage to be set initially, until the alternateImage request finishes.
@@ -259,9 +261,9 @@
                           completed:(nullable SDExternalCompletionBlock)completedBlock NS_REFINED_FOR_SWIFT;
 
 /**
- * Set the button `alternateImage` with an `url`, placeholder and custom options.
+ * Set the button `alternateImage` with an `url`, placeholder and custom options. - 通过url、占位图和常用选项设置按钮替代图
  *
- * The download is asynchronous and cached.
+ * The download is asynchronous and cached. - 异步下载并缓存
  *
  * @param url            The url for the alternateImage.
  * @param placeholder    The alternateImage to be set initially, until the alternateImage request finishes.
@@ -278,9 +280,9 @@
                           completed:(nullable SDExternalCompletionBlock)completedBlock;
 
 /**
- * Set the button `alternateImage` with an `url`, placeholder and custom options.
+ * Set the button `alternateImage` with an `url`, placeholder and custom options. - 通过url、占位图和常用选项设置按钮替代图
  *
- * The download is asynchronous and cached.
+ * The download is asynchronous and cached. - 异步下载并缓存
  *
  * @param url            The url for the alternateImage.
  * @param placeholder    The alternateImage to be set initially, until the alternateImage request finishes.
@@ -300,9 +302,9 @@
                           completed:(nullable SDExternalCompletionBlock)completedBlock;
 
 /**
- * Set the button `alternateImage` with an `url`, placeholder, custom options and context.
+ * Set the button `alternateImage` with an `url`, placeholder, custom options and context. - 通过url、占位图、常用选项和上下文设置按钮替代图像
  *
- * The download is asynchronous and cached.
+ * The download is asynchronous and cached. - 异步下载并缓存
  *
  * @param url            The url for the alternateImage.
  * @param placeholder    The alternateImage to be set initially, until the alternateImage request finishes.
@@ -326,12 +328,12 @@
 #pragma mark - Cancel
 
 /**
- * Cancel the current image download
+ * Cancel the current image download - 取消当前图像下载
  */
 - (void)sd_cancelCurrentImageLoad;
 
 /**
- * Cancel the current alternateImage download
+ * Cancel the current alternateImage download - 取消当前替代图像下载
  */
 - (void)sd_cancelCurrentAlternateImageLoad;
 

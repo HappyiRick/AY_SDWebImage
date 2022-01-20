@@ -14,22 +14,23 @@
 
 /**
  * Integrates SDWebImage async downloading and caching of remote images with UIImageView for highlighted state.
+ * 为高亮状态下的UIImageView集成了SDWebImage异步下载和缓存远程图像
  */
 @interface UIImageView (HighlightedWebCache)
 
 /**
- * Set the imageView `highlightedImage` with an `url`.
+ * Set the imageView `highlightedImage` with an `url`. - 通过url设置imageView高亮图片
  *
- * The download is asynchronous and cached.
+ * The download is asynchronous and cached. - 异步下载并缓存
  *
  * @param url The url for the image.
  */
 - (void)sd_setHighlightedImageWithURL:(nullable NSURL *)url NS_REFINED_FOR_SWIFT;
 
 /**
- * Set the imageView `highlightedImage` with an `url` and custom options.
+ * Set the imageView `highlightedImage` with an `url` and custom options. - 通过url和常用选项设置imageView高亮图片
  *
- * The download is asynchronous and cached.
+ * The download is asynchronous and cached. - 异步下载并缓存
  *
  * @param url     The url for the image.
  * @param options The options to use when downloading the image. @see SDWebImageOptions for the possible values.
@@ -38,9 +39,9 @@
                               options:(SDWebImageOptions)options NS_REFINED_FOR_SWIFT;
 
 /**
- * Set the imageView `highlightedImage` with an `url`, custom options and context.
+ * Set the imageView `highlightedImage` with an `url`, custom options and context. - 通过url、常用选项和上下文设置imageView高亮图片
  *
- * The download is asynchronous and cached.
+ * The download is asynchronous and cached. - 异步下载并缓存
  *
  * @param url     The url for the image.
  * @param options The options to use when downloading the image. @see SDWebImageOptions for the possible values.
@@ -51,9 +52,9 @@
                               context:(nullable SDWebImageContext *)context;
 
 /**
- * Set the imageView `highlightedImage` with an `url`.
+ * Set the imageView `highlightedImage` with an `url`. - 通过 url设置imageView 高亮图片
  *
- * The download is asynchronous and cached.
+ * The download is asynchronous and cached. - 异步下载并缓存
  *
  * @param url            The url for the image.
  * @param completedBlock A block called when operation has been completed. This block has no return value
@@ -66,9 +67,9 @@
                             completed:(nullable SDExternalCompletionBlock)completedBlock NS_REFINED_FOR_SWIFT;
 
 /**
- * Set the imageView `highlightedImage` with an `url` and custom options.
+ * Set the imageView `highlightedImage` with an `url` and custom options. - 通过url和常用选项设置imageView高亮图片
  *
- * The download is asynchronous and cached.
+ * The download is asynchronous and cached. - 异步下载并缓存
  *
  * @param url            The url for the image.
  * @param options        The options to use when downloading the image. @see SDWebImageOptions for the possible values.
@@ -83,9 +84,9 @@
                             completed:(nullable SDExternalCompletionBlock)completedBlock;
 
 /**
- * Set the imageView `highlightedImage` with an `url` and custom options.
+ * Set the imageView `highlightedImage` with an `url` and custom options. - 通过url和常用选项设置imageView高亮图片
  *
- * The download is asynchronous and cached.
+ * The download is asynchronous and cached. - 异步下载并缓存
  *
  * @param url            The url for the image.
  * @param options        The options to use when downloading the image. @see SDWebImageOptions for the possible values.
@@ -103,9 +104,9 @@
                             completed:(nullable SDExternalCompletionBlock)completedBlock;
 
 /**
- * Set the imageView `highlightedImage` with an `url`, custom options and context.
+ * Set the imageView `highlightedImage` with an `url`, custom options and context. - 通过url、常用选项和上下文设置imageView高亮图片
  *
- * The download is asynchronous and cached.
+ * The download is asynchronous and cached. - 异步下载并缓存
  *
  * @param url            The url for the image.
  * @param options        The options to use when downloading the image. @see SDWebImageOptions for the possible values.

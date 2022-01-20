@@ -32,10 +32,13 @@ static CGFloat SDImageScaleFromPath(NSString *string) {
 }
 
 @interface SDAnimatedImage ()
-
+/// 动画编码器
 @property (nonatomic, strong) id<SDAnimatedImageCoder> animatedCoder;
+/// 动画图像格式
 @property (nonatomic, assign, readwrite) SDImageFormat animatedImageFormat;
+/// 加载的动画图像帧数组
 @property (atomic, copy) NSArray<SDImageFrame *> *loadedAnimatedImageFrames; // Mark as atomic to keep thread-safe
+/// 是否加载全部帧
 @property (nonatomic, assign, getter=isAllFramesLoaded) BOOL allFramesLoaded;
 
 @end

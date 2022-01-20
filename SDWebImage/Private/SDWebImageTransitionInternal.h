@@ -13,6 +13,7 @@
 #import <QuartzCore/QuartzCore.h>
 
 /// Helper method for Core Animation transition
+/// 核心动画转场辅助方法
 FOUNDATION_EXPORT CAMediaTimingFunction * _Nullable SDTimingFunctionFromAnimationOptions(SDWebImageAnimationOptions options);
 FOUNDATION_EXPORT CATransition * _Nullable SDTransitionFromAnimationOptions(SDWebImageAnimationOptions options);
 

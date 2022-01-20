@@ -17,7 +17,7 @@
 #import "SDImageAWebPCoder.h"
 
 @implementation SDAnimatedImageRep {
-    CGImageSourceRef _imageSource;
+    CGImageSourceRef _imageSource; // - 图像源
 }
 
 - (void)dealloc {

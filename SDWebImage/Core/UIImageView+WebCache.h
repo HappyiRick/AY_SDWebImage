@@ -42,22 +42,23 @@
 
 /**
  * Integrates SDWebImage async downloading and caching of remote images with UIImageView.
+ * 为UIImageView集成SDWebImage异步下载和缓存远程图片
  */
 @interface UIImageView (WebCache)
 
 /**
- * Set the imageView `image` with an `url`.
+ * Set the imageView `image` with an `url`. - 通过url设置imageView图片
  *
- * The download is asynchronous and cached.
+ * The download is asynchronous and cached. - 异步下载和缓存
  *
  * @param url The url for the image.
  */
 - (void)sd_setImageWithURL:(nullable NSURL *)url NS_REFINED_FOR_SWIFT;
 
 /**
- * Set the imageView `image` with an `url` and a placeholder.
+ * Set the imageView `image` with an `url` and a placeholder. - 通过url和占位图设置imageView图片
  *
- * The download is asynchronous and cached.
+ * The download is asynchronous and cached. - 异步下载和缓存
  *
  * @param url         The url for the image.
  * @param placeholder The image to be set initially, until the image request finishes.
@@ -67,9 +68,9 @@
           placeholderImage:(nullable UIImage *)placeholder NS_REFINED_FOR_SWIFT;
 
 /**
- * Set the imageView `image` with an `url`, placeholder and custom options.
+ * Set the imageView `image` with an `url`, placeholder and custom options. - 通过url、占位图和常用选项设置imageView图片
  *
- * The download is asynchronous and cached.
+ * The download is asynchronous and cached. - 异步下载和缓存
  *
  * @param url         The url for the image.
  * @param placeholder The image to be set initially, until the image request finishes.
@@ -80,9 +81,9 @@
                    options:(SDWebImageOptions)options NS_REFINED_FOR_SWIFT;
 
 /**
- * Set the imageView `image` with an `url`, placeholder, custom options and context.
+ * Set the imageView `image` with an `url`, placeholder, custom options and context. - 通过url、占位图、常用选项和上下文设置imageView图片
  *
- * The download is asynchronous and cached.
+ * The download is asynchronous and cached. - 异步下载和缓存
  *
  * @param url         The url for the image.
  * @param placeholder The image to be set initially, until the image request finishes.
@@ -95,9 +96,9 @@
                    context:(nullable SDWebImageContext *)context;
 
 /**
- * Set the imageView `image` with an `url`.
+ * Set the imageView `image` with an `url`. - 通过url设置imageView图片
  *
- * The download is asynchronous and cached.
+ * The download is asynchronous and cached. - 异步下载和缓存
  *
  * @param url            The url for the image.
  * @param completedBlock A block called when operation has been completed. This block has no return value
@@ -110,9 +111,9 @@
                  completed:(nullable SDExternalCompletionBlock)completedBlock;
 
 /**
- * Set the imageView `image` with an `url`, placeholder.
+ * Set the imageView `image` with an `url`, placeholder. - 通过url、占位图设置imageView图片
  *
- * The download is asynchronous and cached.
+ * The download is asynchronous and cached. - 异步下载和缓存
  *
  * @param url            The url for the image.
  * @param placeholder    The image to be set initially, until the image request finishes.
@@ -127,9 +128,9 @@
                  completed:(nullable SDExternalCompletionBlock)completedBlock NS_REFINED_FOR_SWIFT;
 
 /**
- * Set the imageView `image` with an `url`, placeholder and custom options.
+ * Set the imageView `image` with an `url`, placeholder and custom options. - 通过url、占位图和自定义选项设置imageView图片
  *
- * The download is asynchronous and cached.
+ * The download is asynchronous and cached. - 异步下载和缓存
  *
  * @param url            The url for the image.
  * @param placeholder    The image to be set initially, until the image request finishes.

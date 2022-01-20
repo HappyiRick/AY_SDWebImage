@@ -10,6 +10,7 @@
 #import "SDWebImageCompat.h"
 
 /// A weak proxy which forward all the message to the target
+/// 将所有消息转发给目标的弱代理
 @interface SDWeakProxy : NSProxy
 
 @property (nonatomic, weak, readonly, nullable) id target;

@@ -12,50 +12,67 @@
 #import "SDWebImageDownloaderResponseModifier.h"
 #import "SDWebImageDownloaderDecryptor.h"
 
+/// 进度回调key
 static NSString *const kProgressCallbackKey = @"progress";
+/// 完成回调key
 static NSString *const kCompletedCallbackKey = @"completed";
 
+/// 回调字典
 typedef NSMutableDictionary<NSString *, id> SDCallbacksDictionary;
 
 @interface SDWebImageDownloaderOperation ()
-
+/// 回调数组
 @property (strong, nonatomic, nonnull) NSMutableArray<SDCallbacksDictionary *> *callbackBlocks;
-
+/// 下载器选项
 @property (assign, nonatomic, readwrite) SDWebImageDownloaderOptions options;
+/// 上下文
 @property (copy, nonatomic, readwrite, nullable) SDWebImageContext *context;
-
+/// 执行中
 @property (assign, nonatomic, getter = isExecuting) BOOL executing;
+/// 执行完成
 @property (assign, nonatomic, getter = isFinished) BOOL finished;
+/// 图像数据
 @property (strong, nonatomic, nullable) NSMutableData *imageData;
+/// 缓存数据
 @property (copy, nonatomic, nullable) NSData *cachedData; // for `SDWebImageDownloaderIgnoreCachedResponse`
+/// 预期数据大小
 @property (assign, nonatomic) NSUInteger expectedSize; // may be 0
+/// 已接收大小
 @property (assign, nonatomic) NSUInteger receivedSize;
+/// 响应
 @property (strong, nonatomic, nullable, readwrite) NSURLResponse *response;
+/// 响应错误
 @property (strong, nonatomic, nullable) NSError *responseError;
+/// 上一次进度
 @property (assign, nonatomic) double previousProgress; // previous progress percent
-
+/// 响应修饰器
 @property (strong, nonatomic, nullable) id<SDWebImageDownloaderResponseModifier> responseModifier; // modify original URLResponse
+/// 解密器
 @property (strong, nonatomic, nullable) id<SDWebImageDownloaderDecryptor> decryptor; // decrypt image data
 
 // This is weak because it is injected by whoever manages this session. If this gets nil-ed out, we won't be able to run
 // the task associated with this operation
+/// 这是弱的，因为它是由管理此会话的人注入的。如果这个没了，我们就跑不了了
+/// 下载任务和此操作绑定
 @property (weak, nonatomic, nullable) NSURLSession *unownedSession;
 // This is set if we're using not using an injected NSURLSession. We're responsible of invalidating this one
+/// 这是在我们使用不使用注入的NSURLSession时设置的。我们负责使这个无效
 @property (strong, nonatomic, nullable) NSURLSession *ownedSession;
-
+/// 数据任务
 @property (strong, nonatomic, readwrite, nullable) NSURLSessionTask *dataTask;
-
+/// 数据任务度量对象
 @property (strong, nonatomic, readwrite, nullable) NSURLSessionTaskMetrics *metrics API_AVAILABLE(macosx(10.12), ios(10.0), watchos(3.0), tvos(10.0));
-
+/// 编码器队列
 @property (strong, nonatomic, nonnull) NSOperationQueue *coderQueue; // the serial operation queue to do image decoding
 #if SD_UIKIT
+/// 后台任务Id
 @property (assign, nonatomic) UIBackgroundTaskIdentifier backgroundTaskId;
 #endif
 
 @end
 
 @implementation SDWebImageDownloaderOperation
-
+/// 生成getter && setter
 @synthesize executing = _executing;
 @synthesize finished = _finished;
 

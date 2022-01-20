@@ -193,8 +193,9 @@ static CVReturn DisplayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
 
 - (void)displayLinkDidRefresh:(id)displayLink {
 #if SD_MAC
-    // CVDisplayLink does not use runloop, but we can provide similar behavior for modes
+    // CVDisplayLink does not use runloop, but we can provide similar behavior for modes - CVDisplayLink没有用runloop,但我们可以为模式提供类似的行为
     // May use `default` runloop to avoid extra callback when in `eventTracking` (mouse drag, scroll) or `modalPanel` (modal panel)
+    /// 可以使用' default ' runloop，以避免在' eventTracking '(鼠标拖动，滚动)或' modalPanel '(模态面板)时额外的回调
     NSString *runloopMode = self.runloopMode;
     if (![runloopMode isEqualToString:NSRunLoopCommonModes] && ![runloopMode isEqualToString:NSRunLoop.mainRunLoop.currentMode]) {
         return;
@@ -213,7 +214,7 @@ static CVReturn DisplayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
 
 #if SD_MAC
 static CVReturn DisplayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeStamp *inNow, const CVTimeStamp *inOutputTime, CVOptionFlags flagsIn, CVOptionFlags *flagsOut, void *displayLinkContext) {
-    // CVDisplayLink callback is not on main queue
+    // CVDisplayLink callback is not on main queue - CVDisplayLink回调不在主线程
     SDDisplayLink *object = (__bridge SDDisplayLink *)displayLinkContext;
     if (inOutputTime) {
         object.outputTime = *inOutputTime;

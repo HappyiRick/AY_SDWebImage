@@ -9,7 +9,7 @@
 #import "SDWebImageDownloaderRequestModifier.h"
 
 @interface SDWebImageDownloaderRequestModifier ()
-
+/// 修改器回调
 @property (nonatomic, copy, nonnull) SDWebImageDownloaderRequestModifierBlock block;
 
 @end

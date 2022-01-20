@@ -50,9 +50,11 @@ static NSArray *SDBundlePreferredScales() {
         NSPointerFunctionsOptions valueOptions;
 #if SD_MAC
         // Apple says that NSImage use a weak reference to value
+        /// NSImage用弱引用
         valueOptions = NSPointerFunctionsWeakMemory;
 #else
         // Apple says that UIImage use a strong reference to value
+        /// UIImage用强引用
         valueOptions = NSPointerFunctionsStrongMemory;
 #endif
         _imageTable = [NSMapTable mapTableWithKeyOptions:NSPointerFunctionsCopyIn valueOptions:valueOptions];
@@ -89,6 +91,7 @@ static NSArray *SDBundlePreferredScales() {
     NSString *extension = name.pathExtension;
     if (extension.length == 0) {
         // If no extension, follow Apple's doc, check PNG format
+        /// 如果没有后缀名，根据苹果文档，默认为PNG格式
         extension = @"png";
     }
     name = [name stringByDeletingPathExtension];
@@ -97,6 +100,7 @@ static NSArray *SDBundlePreferredScales() {
     NSArray *scales = SDBundlePreferredScales();
     
     // Check if file name contains scale
+    /// 检查文件名是否包含缩放比
     for (size_t i = 0; i < scales.count; i++) {
         NSNumber *scaleValue = scales[i];
         if ([name hasSuffix:[NSString stringWithFormat:@"@%@x", scaleValue]]) {
@@ -109,6 +113,7 @@ static NSArray *SDBundlePreferredScales() {
     }
     
     // Search with provided scale first
+    /// 先寻找支持的比例
     if (providedScale != 0) {
         NSString *scaledName = [name stringByAppendingFormat:@"@%@x", @(providedScale)];
         path = [bundle pathForResource:scaledName ofType:extension];
@@ -118,10 +123,12 @@ static NSArray *SDBundlePreferredScales() {
     }
     
     // Search with preferred scale
+    /// 查找推荐的缩放比
     for (size_t i = 0; i < scales.count; i++) {
         NSNumber *scaleValue = scales[i];
         if (scaleValue.doubleValue == providedScale) {
             // Ignore provided scale
+            /// 忽略提供的缩放比
             continue;
         }
         NSString *scaledName = [name stringByAppendingFormat:@"@%@x", scaleValue];
@@ -133,6 +140,7 @@ static NSArray *SDBundlePreferredScales() {
     }
     
     // Search without scale
+    /// 不用缩放比查找
     path = [bundle pathForResource:name ofType:extension];
     
     return path;

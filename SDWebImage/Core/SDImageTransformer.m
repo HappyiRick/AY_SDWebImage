@@ -13,24 +13,25 @@
 #endif
 
 // Separator for different transformerKey, for example, `image.png` |> flip(YES,NO) |> rotate(pi/4,YES) => 'image-SDImageFlippingTransformer(1,0)-SDImageRotationTransformer(0.78539816339,1).png'
+/// 分割图像不同变换key
 static NSString * const SDImageTransformerKeySeparator = @"-";
 
 NSString * _Nullable SDTransformedKeyForKey(NSString * _Nullable key, NSString * _Nonnull transformerKey) {
     if (!key || !transformerKey) {
         return nil;
     }
-    // Find the file extension
+    // Find the file extension - 查找文件扩展
     NSURL *keyURL = [NSURL URLWithString:key];
     NSString *ext = keyURL ? keyURL.pathExtension : key.pathExtension;
     if (ext.length > 0) {
-        // For non-file URL
+        // For non-file URL - 对于非文件URL
         if (keyURL && !keyURL.isFileURL) {
-            // keep anything except path (like URL query)
+            // keep anything except path (like URL query) - 保留除路径之外的任何内容(如URL查询)
             NSURLComponents *component = [NSURLComponents componentsWithURL:keyURL resolvingAgainstBaseURL:NO];
             component.path = [[[component.path.stringByDeletingPathExtension stringByAppendingString:SDImageTransformerKeySeparator] stringByAppendingString:transformerKey] stringByAppendingPathExtension:ext];
             return component.URL.absoluteString;
         } else {
-            // file URL
+            // file URL - 文件URL
             return [[[key.stringByDeletingPathExtension stringByAppendingString:SDImageTransformerKeySeparator] stringByAppendingString:transformerKey] stringByAppendingPathExtension:ext];
         }
     } else {

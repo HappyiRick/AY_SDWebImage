@@ -42,42 +42,53 @@ static CGFloat kDestImageLimitBytes = 30.f * kBytesPerMB;
 static const CGFloat kDestSeemOverlap = 2.0f;   // the numbers of pixels to overlap the seems where tiles meet.
 
 @implementation SDImageCoderHelper
-
+/// 将元素为SDImageFrame对象的数组转换为动图
 + (UIImage *)animatedImageWithFrames:(NSArray<SDImageFrame *> *)frames {
+    /// 如果数组中没有元素就不是动图, 则返回nil
     NSUInteger frameCount = frames.count;
     if (frameCount == 0) {
         return nil;
     }
-    
+    /// 生成临时变量保存动图
     UIImage *animatedImage;
-    
 #if SD_UIKIT || SD_WATCH
+    /// 生成一个元素为非负整数, 长度为动图帧数的数组, 保存每一帧的展示时间
     NSUInteger durations[frameCount];
     for (size_t i = 0; i < frameCount; i++) {
+        /// 遍历传入的SDImageFrame对象数组, 获取每一帧的展示时间
         durations[i] = frames[i].duration * 1000;
     }
+    /// 计算所有帧展示时长的最大公约数
     NSUInteger const gcd = gcdArray(frameCount, durations);
+    /// 生成临时变量保存总时长
     __block NSUInteger totalDuration = 0;
-    NSMutableArray<UIImage *> *animatedImages = [NSMutableArray arrayWithCapacity:frameCount];
+    /// 生成临时变量保存动图数组
+    NSMutableArray<UIImage *> *animatedImages = [NSMutableArray arrayWithCapacity:frameCount];、
+    /// 遍历传入的SDImageFrame对象数组
     [frames enumerateObjectsUsingBlock:^(SDImageFrame * _Nonnull frame, NSUInteger idx, BOOL * _Nonnull stop) {
+        /// 获取SDImageFrame对象保存的每一帧的图像
         UIImage *image = frame.image;
+        /// 获取SDImageFrame对象保存的每一帧的展示时间
         NSUInteger duration = frame.duration * 1000;
+        /// 增加总时长
         totalDuration += duration;
+        /// 生成临时变量保存重复次数
         NSUInteger repeatCount;
+        /// 如果计算出的最大公约数大于0，每一帧的重复次数就是展示时间除以最大公约数
+        /// 否则每一帧只重复一次，也就说不重复
         if (gcd) {
             repeatCount = duration / gcd;
         } else {
             repeatCount = 1;
         }
+        /// 根据重复次数向动图数组中重复添加同一帧
         for (size_t i = 0; i < repeatCount; ++i) {
             [animatedImages addObject:image];
         }
     }];
-    
+    /// 利用生成的动图数组和时长生成动图对象
     animatedImage = [UIImage animatedImageWithImages:animatedImages duration:totalDuration / 1000.f];
-    
 #else
-    
     NSMutableData *imageData = [NSMutableData data];
     CFStringRef imageUTType = [NSData sd_UTTypeFromImageFormat:SDImageFormatGIF];
     // Create an image destination. GIF does not support EXIF image orientation
@@ -116,42 +127,54 @@ static const CGFloat kDestSeemOverlap = 2.0f;   // the numbers of pixels to over
 }
 
 + (NSArray<SDImageFrame *> *)framesFromAnimatedImage:(UIImage *)animatedImage {
+    /// 如果没传参就不继续执行了, 直接返回空
     if (!animatedImage) {
         return nil;
     }
-    
+    /// 生成临时变量保存SDImageFrame对象和数量
     NSMutableArray<SDImageFrame *> *frames = [NSMutableArray array];
     NSUInteger frameCount = 0;
     
 #if SD_UIKIT || SD_WATCH
+    /// 获取动图的帧图片数组
     NSArray<UIImage *> *animatedImages = animatedImage.images;
+    /// 获取动图的帧图片数量
     frameCount = animatedImages.count;
+    /// 如果帧图片的数量为0就不继续执行了, 直接返回空
     if (frameCount == 0) {
         return nil;
     }
-    
+    /// 计算每一帧的平均展示时间
     NSTimeInterval avgDuration = animatedImage.duration / frameCount;
+    /// 如果这个动图没有展示时间就默认每一帧展示100ms
     if (avgDuration == 0) {
         avgDuration = 0.1; // if it's a animated image but no duration, set it to default 100ms (this do not have that 10ms limit like GIF or WebP to allow custom coder provide the limit)
     }
-    
+    /// 记录一帧图片的重复次数
     __block NSUInteger repeatCount = 1;
+    /// 记录当前遍历到的图片之前的图片
     __block UIImage *previousImage = animatedImages.firstObject;
     [animatedImages enumerateObjectsUsingBlock:^(UIImage * _Nonnull image, NSUInteger idx, BOOL * _Nonnull stop) {
         // ignore first
+        // 第一张图片不处理
         if (idx == 0) {
             return;
         }
         if ([image isEqual:previousImage]) {
+            /// 如果这一帧的图片和之前一帧图片相同就添加重复次数
             repeatCount++;
         } else {
+            /// 如果两帧图片不相同, 就生成SDImageFrame对象
             SDImageFrame *frame = [SDImageFrame frameWithImage:previousImage duration:avgDuration * repeatCount];
+            /// 数组记录对象
             [frames addObject:frame];
+            /// 重复次数设置为1次
             repeatCount = 1;
         }
         previousImage = image;
     }];
     // last one
+    /// 如果是最后一张图片就直接添加
     SDImageFrame *frame = [SDImageFrame frameWithImage:previousImage duration:avgDuration * repeatCount];
     [frames addObject:frame];
     
@@ -187,6 +210,7 @@ static const CGFloat kDestSeemOverlap = 2.0f;   // the numbers of pixels to over
     return frames;
 }
 
+/// 获取色彩空间
 + (CGColorSpaceRef)colorSpaceGetDeviceRGB {
 #if SD_MAC
     CGColorSpaceRef screenColorSpace = NSScreen.mainScreen.colorSpace.CGColorSpace;
@@ -210,6 +234,7 @@ static const CGFloat kDestSeemOverlap = 2.0f;   // the numbers of pixels to over
     return colorSpace;
 }
 
+/// 判断CGImage是否有alpha通道
 + (BOOL)CGImageContainsAlpha:(CGImageRef)cgImage {
     if (!cgImage) {
         return NO;
@@ -657,6 +682,7 @@ static inline CGAffineTransform SDCGContextTransformFromOrientation(CGImagePrope
 }
 
 #if SD_UIKIT || SD_WATCH
+/// 计算两个整数a和b的最大公约数
 static NSUInteger gcd(NSUInteger a, NSUInteger b) {
     NSUInteger c;
     while (a != 0) {
@@ -667,6 +693,7 @@ static NSUInteger gcd(NSUInteger a, NSUInteger b) {
     return b;
 }
 
+/// 这个函数是计算一个整数数组的最大公约数
 static NSUInteger gcdArray(size_t const count, NSUInteger const * const values) {
     if (count == 0) {
         return 0;

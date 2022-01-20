@@ -13,6 +13,9 @@ static char loadOperationKey;
 
 // key is strong, value is weak because operation instance is retained by SDWebImageManager's runningOperations property
 // we should use lock to keep thread-safe because these method may not be accessed from main queue
+
+/// key为强值，value为弱值，因为操作实例由SDWebImageManager的runningOperations属性保留
+/// 我们应该使用lock来保证线程安全，因为这些方法不能从主队列访问
 typedef NSMapTable<NSString *, id<SDWebImageOperation>> SDOperationsDictionary;
 
 @implementation UIView (WebCacheOperation)

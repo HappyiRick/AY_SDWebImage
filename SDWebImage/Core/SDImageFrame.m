@@ -18,6 +18,7 @@
 @implementation SDImageFrame
 
 + (instancetype)frameWithImage:(UIImage *)image duration:(NSTimeInterval)duration {
+    /// 工厂方法
     SDImageFrame *frame = [[SDImageFrame alloc] init];
     frame.image = image;
     frame.duration = duration;

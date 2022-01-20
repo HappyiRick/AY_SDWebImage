@@ -23,6 +23,7 @@ inline CGFloat SDImageScaleFactorForKey(NSString * _Nullable key) {
         return scale;
     }
     // Check if target OS support scale
+    /// 检查当前系统是否支持缩放
 #if SD_WATCH
     if ([[WKInterfaceDevice currentDevice] respondsToSelector:@selector(screenScale)])
 #elif SD_UIKIT
@@ -34,6 +35,7 @@ inline CGFloat SDImageScaleFactorForKey(NSString * _Nullable key) {
         // a@2x.png -> 8
         if (key.length >= 8) {
             // Fast check
+            // 快速检查
             BOOL isURL = [key hasPrefix:@"http://"] || [key hasPrefix:@"https://"];
             for (NSNumber *scaleFactor in SDImageScaleFactors()) {
                 // @2x. for file name and normal url
@@ -79,6 +81,7 @@ inline UIImage * _Nullable SDScaledImageForScaleFactor(CGFloat scale, UIImage * 
         UIImage *animatedImage;
 #if SD_UIKIT || SD_WATCH
         // `UIAnimatedImage` images share the same size and scale.
+        /// 动画图像共享尺寸和缩放比例
         NSMutableArray<UIImage *> *scaledImages = [NSMutableArray array];
         
         for (UIImage *tempImage in image.images) {
@@ -90,6 +93,7 @@ inline UIImage * _Nullable SDScaledImageForScaleFactor(CGFloat scale, UIImage * 
         animatedImage.sd_imageLoopCount = image.sd_imageLoopCount;
 #else
         // Animated GIF for `NSImage` need to grab `NSBitmapImageRep`;
+        /// 对于“NSImage”的动画GIF需要获取`NSBitmapImageRep`
         NSRect imageRect = NSMakeRect(0, 0, image.size.width, image.size.height);
         NSImageRep *imageRep = [image bestRepresentationForRect:imageRect context:nil hints:nil];
         NSBitmapImageRep *bitmapImageRep;

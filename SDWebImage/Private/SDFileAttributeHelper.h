@@ -8,6 +8,7 @@
 #import <Foundation/Foundation.h>
 
 /// File Extended Attribute (xattr) helper methods
+/// 文件后缀属性辅助方法
 @interface SDFileAttributeHelper : NSObject
 
 + (nullable NSArray<NSString *> *)extendedAttributeNamesAtPath:(nonnull NSString *)path traverseLink:(BOOL)follow error:(NSError * _Nullable * _Nullable)err;

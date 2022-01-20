@@ -15,13 +15,16 @@
 #import "UIImage+ForceDecode.h"
 
 // Specify DPI for vector format in CGImageSource, like PDF
+// 在CGImageSource中为矢量格式指定DPI，比如PDF
 static NSString * kSDCGImageSourceRasterizationDPI = @"kCGImageSourceRasterizationDPI";
 // Specify File Size for lossy format encoding, like JPEG
+//  为有损格式编码指定文件大小，如JPEG
 static NSString * kSDCGImageDestinationRequestedFileSize = @"kCGImageDestinationRequestedFileSize";
 
 @interface SDImageIOCoderFrame : NSObject
-
+/// 帧序列
 @property (nonatomic, assign) NSUInteger index; // Frame index (zero based)
+/// 帧时长
 @property (nonatomic, assign) NSTimeInterval duration; // Frame duration in seconds
 
 @end
@@ -30,15 +33,25 @@ static NSString * kSDCGImageDestinationRequestedFileSize = @"kCGImageDestination
 @end
 
 @implementation SDImageIOAnimatedCoder {
+    /// 宽高
     size_t _width, _height;
+    /// 图像源
     CGImageSourceRef _imageSource;
+    /// 图像数据
     NSData *_imageData;
+    /// 图像缩放比
     CGFloat _scale;
+    /// 图像循环数量
     NSUInteger _loopCount;
+    /// 帧数量
     NSUInteger _frameCount;
+    /// 帧数组
     NSArray<SDImageIOCoderFrame *> *_frames;
+    /// 完成标识
     BOOL _finished;
+    /// 保持长宽比
     BOOL _preserveAspectRatio;
+    /// 缩略尺寸
     CGSize _thumbnailSize;
 }
 
@@ -107,14 +120,17 @@ static NSString * kSDCGImageDestinationRequestedFileSize = @"kCGImageDestination
 }
 
 #pragma mark - Utils
-
+/// 解码格式是否支持
 + (BOOL)canDecodeFromFormat:(SDImageFormat)format {
     static dispatch_once_t onceToken;
     static NSSet *imageUTTypeSet;
     dispatch_once(&onceToken, ^{
+        /// 获取图片类型数组
         NSArray *imageUTTypes = (__bridge_transfer NSArray *)CGImageSourceCopyTypeIdentifiers();
+        /// 获取图像类型集合
         imageUTTypeSet = [NSSet setWithArray:imageUTTypes];
     });
+    /// 通过SDImageFormat获取图像类型
     CFStringRef imageUTType = [NSData sd_UTTypeFromImageFormat:format];
     if ([imageUTTypeSet containsObject:(__bridge NSString *)(imageUTType)]) {
         // Can decode from target format
@@ -122,14 +138,17 @@ static NSString * kSDCGImageDestinationRequestedFileSize = @"kCGImageDestination
     }
     return NO;
 }
-
+/// 编码格式是否支持
 + (BOOL)canEncodeToFormat:(SDImageFormat)format {
     static dispatch_once_t onceToken;
     static NSSet *imageUTTypeSet;
     dispatch_once(&onceToken, ^{
+        /// 获得目标编码格式数组
         NSArray *imageUTTypes = (__bridge_transfer NSArray *)CGImageDestinationCopyTypeIdentifiers();
+        /// 获取目标编码集合
         imageUTTypeSet = [NSSet setWithArray:imageUTTypes];
     });
+    /// 获取图像格式
     CFStringRef imageUTType = [NSData sd_UTTypeFromImageFormat:format];
     if ([imageUTTypeSet containsObject:(__bridge NSString *)(imageUTType)]) {
         // Can encode to target format
@@ -137,11 +156,15 @@ static NSString * kSDCGImageDestinationRequestedFileSize = @"kCGImageDestination
     }
     return NO;
 }
-
+/// 图像源的循环次数
 + (NSUInteger)imageLoopCountWithSource:(CGImageSourceRef)source {
+    /// 获取默认循环次数
     NSUInteger loopCount = self.defaultLoopCount;
+    /// 从图像源获取图像属性
     NSDictionary *imageProperties = (__bridge_transfer NSDictionary *)CGImageSourceCopyProperties(source, NULL);
+    /// 获取容器属性
     NSDictionary *containerProperties = imageProperties[self.dictionaryProperty];
+    /// 获取循环次数
     if (containerProperties) {
         NSNumber *containerLoopCount = containerProperties[self.loopCountProperty];
         if (containerLoopCount != nil) {
@@ -150,20 +173,25 @@ static NSString * kSDCGImageDestinationRequestedFileSize = @"kCGImageDestination
     }
     return loopCount;
 }
-
+/// 对应index位置帧时长
 + (NSTimeInterval)frameDurationAtIndex:(NSUInteger)index source:(CGImageSourceRef)source {
+    /// 设置配置
     NSDictionary *options = @{
         (__bridge NSString *)kCGImageSourceShouldCacheImmediately : @(YES),
         (__bridge NSString *)kCGImageSourceShouldCache : @(YES) // Always cache to reduce CPU usage
     };
+    /// 设置默认帧时长
     NSTimeInterval frameDuration = 0.1;
+    /// 获取帧属性
     CFDictionaryRef cfFrameProperties = CGImageSourceCopyPropertiesAtIndex(source, index, (__bridge CFDictionaryRef)options);
     if (!cfFrameProperties) {
         return frameDuration;
     }
+    /// 获取帧属性
     NSDictionary *frameProperties = (__bridge NSDictionary *)cfFrameProperties;
+    /// 获取容器属性
     NSDictionary *containerProperties = frameProperties[self.dictionaryProperty];
-    
+    /// 获取unclampedDelayTimeProperty属性值
     NSNumber *delayTimeUnclampedProp = containerProperties[self.unclampedDelayTimeProperty];
     if (delayTimeUnclampedProp != nil) {
         frameDuration = [delayTimeUnclampedProp doubleValue];
@@ -178,7 +206,7 @@ static NSString * kSDCGImageDestinationRequestedFileSize = @"kCGImageDestination
     // We follow Firefox's behavior and use a duration of 100 ms for any frames that specify
     // a duration of <= 10 ms. See <rdar://problem/7689300> and <http://webkit.org/b/36082>
     // for more information.
-    
+    // 对于帧时长小于0.011s的设置为0.1s
     if (frameDuration < 0.011) {
         frameDuration = 0.1;
     }
@@ -186,33 +214,40 @@ static NSString * kSDCGImageDestinationRequestedFileSize = @"kCGImageDestination
     CFRelease(cfFrameProperties);
     return frameDuration;
 }
-
+/// 创建帧
 + (UIImage *)createFrameAtIndex:(NSUInteger)index source:(CGImageSourceRef)source scale:(CGFloat)scale preserveAspectRatio:(BOOL)preserveAspectRatio thumbnailSize:(CGSize)thumbnailSize options:(NSDictionary *)options {
     // Some options need to pass to `CGImageSourceCopyPropertiesAtIndex` before `CGImageSourceCreateImageAtIndex`, or ImageIO will ignore them because they parse once :)
     // Parse the image properties
+    /// 序列化图像属性
     NSDictionary *properties = (__bridge_transfer NSDictionary *)CGImageSourceCopyPropertiesAtIndex(source, index, (__bridge CFDictionaryRef)options);
+    /// 像素宽度
     CGFloat pixelWidth = [properties[(__bridge NSString *)kCGImagePropertyPixelWidth] doubleValue];
+    /// 像素高度
     CGFloat pixelHeight = [properties[(__bridge NSString *)kCGImagePropertyPixelHeight] doubleValue];
+    /// 图像方向
     CGImagePropertyOrientation exifOrientation = (CGImagePropertyOrientation)[properties[(__bridge NSString *)kCGImagePropertyOrientation] unsignedIntegerValue];
     if (!exifOrientation) {
         exifOrientation = kCGImagePropertyOrientationUp;
     }
-    
+    /// 获取图像类型
     CFStringRef uttype = CGImageSourceGetType(source);
     // Check vector format
     BOOL isVector = NO;
+    /// 矢量标识
     if ([NSData sd_imageFormatFromUTType:uttype] == SDImageFormatPDF) {
         isVector = YES;
     }
-
+    /// 解码配置
     NSMutableDictionary *decodingOptions;
     if (options) {
         decodingOptions = [NSMutableDictionary dictionaryWithDictionary:options];
     } else {
         decodingOptions = [NSMutableDictionary dictionary];
     }
+    /// 图像引用
     CGImageRef imageRef;
     BOOL createFullImage = thumbnailSize.width == 0 || thumbnailSize.height == 0 || pixelWidth == 0 || pixelHeight == 0 || (pixelWidth <= thumbnailSize.width && pixelHeight <= thumbnailSize.height);
+    /// 创建全图
     if (createFullImage) {
         if (isVector) {
             if (thumbnailSize.width == 0 || thumbnailSize.height == 0) {
@@ -234,6 +269,7 @@ static NSString * kSDCGImageDestinationRequestedFileSize = @"kCGImageDestination
     } else {
         decodingOptions[(__bridge NSString *)kCGImageSourceCreateThumbnailWithTransform] = @(preserveAspectRatio);
         CGFloat maxPixelSize;
+        /// 宽高比
         if (preserveAspectRatio) {
             CGFloat pixelRatio = pixelWidth / pixelHeight;
             CGFloat thumbnailRatio = thumbnailSize.width / thumbnailSize.height;
@@ -276,20 +312,22 @@ static NSString * kSDCGImageDestinationRequestedFileSize = @"kCGImageDestination
 }
 
 #pragma mark - Decode
+/// 是否支持数据解码
 - (BOOL)canDecodeFromData:(nullable NSData *)data {
     return ([NSData sd_imageFormatForImageData:data] == self.class.imageFormat);
 }
-
+/// 从数据中解码图像
 - (UIImage *)decodedImageWithData:(NSData *)data options:(nullable SDImageCoderOptions *)options {
     if (!data) {
         return nil;
     }
     CGFloat scale = 1;
+    /// 获取缩放因子
     NSNumber *scaleFactor = options[SDImageCoderDecodeScaleFactor];
     if (scaleFactor != nil) {
         scale = MAX([scaleFactor doubleValue], 1);
     }
-    
+    /// 缩略图尺寸
     CGSize thumbnailSize = CGSizeZero;
     NSValue *thumbnailSizeValue = options[SDImageCoderDecodeThumbnailPixelSize];
     if (thumbnailSizeValue != nil) {
@@ -299,7 +337,7 @@ static NSString * kSDCGImageDestinationRequestedFileSize = @"kCGImageDestination
         thumbnailSize = thumbnailSizeValue.CGSizeValue;
 #endif
     }
-    
+    /// 宽高比
     BOOL preserveAspectRatio = YES;
     NSNumber *preserveAspectRatioValue = options[SDImageCoderDecodePreserveAspectRatio];
     if (preserveAspectRatioValue != nil) {
@@ -309,6 +347,7 @@ static NSString * kSDCGImageDestinationRequestedFileSize = @"kCGImageDestination
 #if SD_MAC
     // If don't use thumbnail, prefers the built-in generation of frames (GIF/APNG)
     // Which decode frames in time and reduce memory usage
+    /// 如果不使用缩略图，更喜欢内置生成的帧(GIF/APNG)，它可以及时解码帧并减少内存使用
     if (thumbnailSize.width == 0 || thumbnailSize.height == 0) {
         SDAnimatedImageRep *imageRep = [[SDAnimatedImageRep alloc] initWithData:data];
         NSSize size = NSMakeSize(imageRep.pixelsWide / scale, imageRep.pixelsHigh / scale);
@@ -318,18 +357,20 @@ static NSString * kSDCGImageDestinationRequestedFileSize = @"kCGImageDestination
         return animatedImage;
     }
 #endif
-    
+    /// 获取图像源
     CGImageSourceRef source = CGImageSourceCreateWithData((__bridge CFDataRef)data, NULL);
     if (!source) {
         return nil;
     }
     size_t count = CGImageSourceGetCount(source);
     UIImage *animatedImage;
-    
+    /// 是否只解码第一帧
     BOOL decodeFirstFrame = [options[SDImageCoderDecodeFirstFrameOnly] boolValue];
     if (decodeFirstFrame || count <= 1) {
+        /// 创建第一帧图像
         animatedImage = [self.class createFrameAtIndex:0 source:source scale:scale preserveAspectRatio:preserveAspectRatio thumbnailSize:thumbnailSize options:nil];
     } else {
+        /// 创建动画图像
         NSMutableArray<SDImageFrame *> *frames = [NSMutableArray array];
         
         for (size_t i = 0; i < count; i++) {
@@ -356,23 +397,28 @@ static NSString * kSDCGImageDestinationRequestedFileSize = @"kCGImageDestination
 }
 
 #pragma mark - Progressive Decode
-
+/// 是否支持渐进解码
 - (BOOL)canIncrementalDecodeFromData:(NSData *)data {
     return ([NSData sd_imageFormatForImageData:data] == self.class.imageFormat);
 }
-
+/// 创建增量解码器
 - (instancetype)initIncrementalWithOptions:(nullable SDImageCoderOptions *)options {
     self = [super init];
     if (self) {
+        /// 获取当前类的图像类型
         NSString *imageUTType = self.class.imageUTType;
+        /// 获取图像源
         _imageSource = CGImageSourceCreateIncremental((__bridge CFDictionaryRef)@{(__bridge NSString *)kCGImageSourceTypeIdentifierHint : imageUTType});
         CGFloat scale = 1;
+        /// 获取缩放因子
         NSNumber *scaleFactor = options[SDImageCoderDecodeScaleFactor];
         if (scaleFactor != nil) {
             scale = MAX([scaleFactor doubleValue], 1);
         }
         _scale = scale;
+        /// 获取缩略图尺寸
         CGSize thumbnailSize = CGSizeZero;
+        /// 获取缩略图像素尺寸值
         NSValue *thumbnailSizeValue = options[SDImageCoderDecodeThumbnailPixelSize];
         if (thumbnailSizeValue != nil) {
     #if SD_MAC
@@ -382,6 +428,7 @@ static NSString * kSDCGImageDestinationRequestedFileSize = @"kCGImageDestination
     #endif
         }
         _thumbnailSize = thumbnailSize;
+        /// 宽高比
         BOOL preserveAspectRatio = YES;
         NSNumber *preserveAspectRatioValue = options[SDImageCoderDecodePreserveAspectRatio];
         if (preserveAspectRatioValue != nil) {
@@ -394,7 +441,7 @@ static NSString * kSDCGImageDestinationRequestedFileSize = @"kCGImageDestination
     }
     return self;
 }
-
+/// 更新增量数据
 - (void)updateIncrementalData:(NSData *)data finished:(BOOL)finished {
     if (_finished) {
         return;
@@ -406,6 +453,7 @@ static NSString * kSDCGImageDestinationRequestedFileSize = @"kCGImageDestination
     // Thanks to the author @Nyx0uf
     
     // Update the data source, we must pass ALL the data, not just the new bytes
+    /// 更新数据源数据
     CGImageSourceUpdateData(_imageSource, (__bridge CFDataRef)data, finished);
     
     if (_width + _height == 0) {
@@ -424,9 +472,10 @@ static NSString * kSDCGImageDestinationRequestedFileSize = @"kCGImageDestination
     }
     
     // For animated image progressive decoding because the frame count and duration may be changed.
+    /// 增量解码
     [self scanAndCheckFramesValidWithImageSource:_imageSource];
 }
-
+/// 使用options配置增量解码图像
 - (UIImage *)incrementalDecodedImageWithOptions:(SDImageCoderOptions *)options {
     UIImage *image;
     
@@ -447,10 +496,11 @@ static NSString * kSDCGImageDestinationRequestedFileSize = @"kCGImageDestination
 }
 
 #pragma mark - Encode
+/// 是否支持format格式编码
 - (BOOL)canEncodeToFormat:(SDImageFormat)format {
     return (format == self.class.imageFormat);
 }
-
+/// 从图像进行编码
 - (NSData *)encodedDataWithImage:(UIImage *)image format:(SDImageFormat)format options:(nullable SDImageCoderOptions *)options {
     if (!image) {
         return nil;
@@ -464,9 +514,11 @@ static NSString * kSDCGImageDestinationRequestedFileSize = @"kCGImageDestination
     if (format != self.class.imageFormat) {
         return nil;
     }
-    
+    /// 图像数据
     NSMutableData *imageData = [NSMutableData data];
+    /// 图像格式
     CFStringRef imageUTType = [NSData sd_UTTypeFromImageFormat:format];
+    /// 图像帧数组
     NSArray<SDImageFrame *> *frames = [SDImageCoderHelper framesFromAnimatedImage:image];
     
     // Create an image destination. Animated Image does not support EXIF image orientation TODO
@@ -479,6 +531,7 @@ static NSString * kSDCGImageDestinationRequestedFileSize = @"kCGImageDestination
     NSMutableDictionary *properties = [NSMutableDictionary dictionary];
     // Encoding Options
     double compressionQuality = 1;
+    /// 压缩比
     if (options[SDImageCoderEncodeCompressionQuality]) {
         compressionQuality = [options[SDImageCoderEncodeCompressionQuality] doubleValue];
     }
@@ -599,7 +652,7 @@ static NSString * kSDCGImageDestinationRequestedFileSize = @"kCGImageDestination
     }
     return self;
 }
-
+/// 扫描检查帧是否合规
 - (BOOL)scanAndCheckFramesValidWithImageSource:(CGImageSourceRef)imageSource {
     if (!imageSource) {
         return NO;
@@ -621,26 +674,26 @@ static NSString * kSDCGImageDestinationRequestedFileSize = @"kCGImageDestination
     
     return YES;
 }
-
+/// 动画图像数据
 - (NSData *)animatedImageData {
     return _imageData;
 }
-
+/// 动画图像循环次数
 - (NSUInteger)animatedImageLoopCount {
     return _loopCount;
 }
-
+/// 动画图像帧数量
 - (NSUInteger)animatedImageFrameCount {
     return _frameCount;
 }
-
+/// 动画图像对应帧长度
 - (NSTimeInterval)animatedImageDurationAtIndex:(NSUInteger)index {
     if (index >= _frameCount) {
         return 0;
     }
     return _frames[index].duration;
 }
-
+/// 动画图像对应帧图像
 - (UIImage *)animatedImageFrameAtIndex:(NSUInteger)index {
     if (index >= _frameCount) {
         return nil;

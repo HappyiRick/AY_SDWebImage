@@ -11,6 +11,7 @@
 
 @interface SDGraphicsImageRendererFormat ()
 #if SD_UIKIT
+/// 类拓展
 @property (nonatomic, strong) UIGraphicsImageRendererFormat *uiformat API_AVAILABLE(ios(10.0), tvos(10.0));
 #endif
 @end
@@ -187,19 +188,22 @@
 @end
 
 @interface SDGraphicsImageRenderer ()
+/// 图形尺寸
 @property (nonatomic, assign) CGSize size;
+/// 图形渲染格式
 @property (nonatomic, strong) SDGraphicsImageRendererFormat *format;
 #if SD_UIKIT
+/// 视图渲染
 @property (nonatomic, strong) UIGraphicsImageRenderer *uirenderer API_AVAILABLE(ios(10.0), tvos(10.0));
 #endif
 @end
 
 @implementation SDGraphicsImageRenderer
-
+/// 初始化方法
 - (instancetype)initWithSize:(CGSize)size {
     return [self initWithSize:size format:SDGraphicsImageRendererFormat.preferredFormat];
 }
-
+/// 初始化
 - (instancetype)initWithSize:(CGSize)size format:(SDGraphicsImageRendererFormat *)format {
     NSParameterAssert(format);
     self = [super init];
@@ -215,7 +219,7 @@
     }
     return self;
 }
-
+/// 
 - (UIImage *)imageWithActions:(NS_NOESCAPE SDGraphicsImageDrawingActions)actions {
     NSParameterAssert(actions);
 #if SD_UIKIT

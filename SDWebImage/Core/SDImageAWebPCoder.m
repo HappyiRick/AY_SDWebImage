@@ -10,6 +10,7 @@
 #import "SDImageIOAnimatedCoderInternal.h"
 
 // These constants are available from iOS 14+ and Xcode 12. This raw value is used for toolchain and firmware compatibility
+// 这些常量在iOS 14+和Xcode 12中可用。这个原始值用于工具链和固件兼容性
 static NSString * kSDCGImagePropertyWebPDictionary = @"{WebP}";
 static NSString * kSDCGImagePropertyWebPLoopCount = @"LoopCount";
 static NSString * kSDCGImagePropertyWebPDelayTime = @"DelayTime";
@@ -29,7 +30,7 @@ static NSString * kSDCGImagePropertyWebPUnclampedDelayTime = @"UnclampedDelayTim
     }
 #endif
 }
-
+/// 创建单例
 + (instancetype)sharedCoder {
     static SDImageAWebPCoder *coder;
     static dispatch_once_t onceToken;
@@ -40,7 +41,7 @@ static NSString * kSDCGImagePropertyWebPUnclampedDelayTime = @"UnclampedDelayTim
 }
 
 #pragma mark - SDImageCoder
-
+/// 是否支持从数据解码
 - (BOOL)canDecodeFromData:(nullable NSData *)data {
     switch ([NSData sd_imageFormatForImageData:data]) {
         case SDImageFormatWebP:
@@ -50,11 +51,11 @@ static NSString * kSDCGImagePropertyWebPUnclampedDelayTime = @"UnclampedDelayTim
             return NO;
     }
 }
-
+/// 是否支持从数据增量解码
 - (BOOL)canIncrementalDecodeFromData:(NSData *)data {
     return [self canDecodeFromData:data];
 }
-
+/// 是否支持编码格式
 - (BOOL)canEncodeToFormat:(SDImageFormat)format {
     switch (format) {
         case SDImageFormatWebP:
@@ -66,11 +67,11 @@ static NSString * kSDCGImagePropertyWebPUnclampedDelayTime = @"UnclampedDelayTim
 }
 
 #pragma mark - Subclass Override
-
+/// 图片格式
 + (SDImageFormat)imageFormat {
     return SDImageFormatWebP;
 }
-
+/// 图片格式唯一标识
 + (NSString *)imageUTType {
     return (__bridge NSString *)kSDUTTypeWebP;
 }

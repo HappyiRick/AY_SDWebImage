@@ -14,11 +14,12 @@
 
 /**
  Integrates SDWebImage async downloading and caching of remote images with SDAnimatedImageView.
+ 为SDAnimatedImageView集成SDWebImage异步下载和缓存远端图像
  */
 @interface SDAnimatedImageView (WebCache)
 
 /**
- * Set the imageView `image` with an `url`.
+ * Set the imageView `image` with an `url`. - 通过url设置image
  *
  * The download is asynchronous and cached.
  *
@@ -27,7 +28,7 @@
 - (void)sd_setImageWithURL:(nullable NSURL *)url NS_REFINED_FOR_SWIFT;
 
 /**
- * Set the imageView `image` with an `url` and a placeholder.
+ * Set the imageView `image` with an `url` and a placeholder. - 通过url和占位图设置imageView图像
  *
  * The download is asynchronous and cached.
  *
@@ -39,7 +40,7 @@
           placeholderImage:(nullable UIImage *)placeholder NS_REFINED_FOR_SWIFT;
 
 /**
- * Set the imageView `image` with an `url`, placeholder and custom options.
+ * Set the imageView `image` with an `url`, placeholder and custom options. - 通过url、占位图和自定义选项设置imageView图像
  *
  * The download is asynchronous and cached.
  *
@@ -52,7 +53,7 @@
                    options:(SDWebImageOptions)options NS_REFINED_FOR_SWIFT;
 
 /**
- * Set the imageView `image` with an `url`, placeholder, custom options and context.
+ * Set the imageView `image` with an `url`, placeholder, custom options and context. - 通过url、占位图、自定义选项和上下文设置imageView图像
  *
  * The download is asynchronous and cached.
  *
@@ -67,7 +68,7 @@
                    context:(nullable SDWebImageContext *)context;
 
 /**
- * Set the imageView `image` with an `url`.
+ * Set the imageView `image` with an `url`. - 通过url设置imageView图像
  *
  * The download is asynchronous and cached.
  *
@@ -82,7 +83,7 @@
                  completed:(nullable SDExternalCompletionBlock)completedBlock;
 
 /**
- * Set the imageView `image` with an `url`, placeholder.
+ * Set the imageView `image` with an `url`, placeholder. - 通过url、占位图设置imageView图像
  *
  * The download is asynchronous and cached.
  *
@@ -99,7 +100,7 @@
                  completed:(nullable SDExternalCompletionBlock)completedBlock NS_REFINED_FOR_SWIFT;
 
 /**
- * Set the imageView `image` with an `url`, placeholder and custom options.
+ * Set the imageView `image` with an `url`, placeholder and custom options. - 通过url、展位图和自定义选项设置imageView图像
  *
  * The download is asynchronous and cached.
  *

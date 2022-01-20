@@ -7,7 +7,7 @@
  */
 
 #import "SDImageCoder.h"
-
+/// 常量
 SDImageCoderOption const SDImageCoderDecodeFirstFrameOnly = @"decodeFirstFrameOnly";
 SDImageCoderOption const SDImageCoderDecodeScaleFactor = @"decodeScaleFactor";
 SDImageCoderOption const SDImageCoderDecodePreserveAspectRatio = @"decodePreserveAspectRatio";

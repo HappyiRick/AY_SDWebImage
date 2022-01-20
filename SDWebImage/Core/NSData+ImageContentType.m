@@ -21,13 +21,15 @@
 
 + (SDImageFormat)sd_imageFormatForImageData:(nullable NSData *)data {
     if (!data) {
+        // 如果为传入二进制数据就返回“未定义类型”
         return SDImageFormatUndefined;
     }
-    
+    // 获取图片二进制数据的第一个字节, 8 bit
     // File signatures table: http://www.garykessler.net/library/file_sigs.html
     uint8_t c;
     [data getBytes:&c length:1];
     switch (c) {
+        // 根据字节的不同返回不同的类型
         case 0xFF:
             return SDImageFormatJPEG;
         case 0x89:
@@ -38,6 +40,8 @@
         case 0x4D:
             return SDImageFormatTIFF;
         case 0x52: {
+            // WebP格式的判断要复杂些:
+            // 首先图片二进制的长度要超过12个字节, 并且开头的12个字节通过ASCII编码后的字符要以“RIFF”, 并且以“WEBP”结束
             if (data.length >= 12) {
                 //RIFF....WEBP
                 NSString *testString = [[NSString alloc] initWithData:[data subdataWithRange:NSMakeRange(0, 12)] encoding:NSASCIIStringEncoding];
@@ -48,6 +52,9 @@
             break;
         }
         case 0x00: {
+            // HEIC格式的图片判断也比其他的要复杂些:
+            // 首先图片二进制的长度也要超过12个字节, 然后从第4个字节开始取8个字节并通过ASCII编码转换成字符串,
+            // 如果字符串中包含"ftypheic"、“ftypheix”、“ftyphevc”和“ftyphevx”中的任意一个字符串就可以
             if (data.length >= 12) {
                 //....ftypheic ....ftypheix ....ftyphevc ....ftyphevx
                 NSString *testString = [[NSString alloc] initWithData:[data subdataWithRange:NSMakeRange(4, 8)] encoding:NSASCIIStringEncoding];
@@ -58,6 +65,8 @@
                     return SDImageFormatHEIC;
                 }
                 //....ftypmif1 ....ftypmsf1
+                // HEIF格式的图片判断
+                // 如果字符串中包含"ftypmif1"、“ftypmsf1”中的任意一个字符串就可以
                 if ([testString isEqualToString:@"ftypmif1"] || [testString isEqualToString:@"ftypmsf1"]) {
                     return SDImageFormatHEIF;
                 }
@@ -65,6 +74,9 @@
             break;
         }
         case 0x25: {
+            // PDF格式
+            // 二进制数据长度要超过4个字节, 然后从第1个字节开始截取3个字节并通过ASCII编码转换成字符串
+            // 如果字符串中包含“PDF”就可以
             if (data.length >= 4) {
                 //%PDF
                 NSString *testString = [[NSString alloc] initWithData:[data subdataWithRange:NSMakeRange(1, 3)] encoding:NSASCIIStringEncoding];
@@ -75,14 +87,17 @@
         }
         case 0x3C: {
             // Check end with SVG tag
+            // 检查是否以SVG标志结尾
             if ([data rangeOfData:[kSVGTagEnd dataUsingEncoding:NSUTF8StringEncoding] options:NSDataSearchBackwards range: NSMakeRange(data.length - MIN(100, data.length), MIN(100, data.length))].location != NSNotFound) {
                 return SDImageFormatSVG;
             }
         }
     }
+    // 如果上述情况都不满足, 则返回未定义类型
     return SDImageFormatUndefined;
 }
 
+// 根据传入的图片类型, 返回对应的格式标识
 + (nonnull CFStringRef)sd_UTTypeFromImageFormat:(SDImageFormat)format {
     CFStringRef UTType;
     switch (format) {

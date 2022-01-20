@@ -13,21 +13,33 @@
 #import "SDInternalMacros.h"
 
 @interface SDAnimatedImagePlayer () {
-    SD_LOCK_DECLARE(_lock);
-    NSRunLoopMode _runLoopMode;
+    SD_LOCK_DECLARE(_lock); // 锁
+    NSRunLoopMode _runLoopMode; // runloop模式
 }
 
+/// 当前帧
 @property (nonatomic, strong, readwrite) UIImage *currentFrame;
+/// 当前帧索引
 @property (nonatomic, assign, readwrite) NSUInteger currentFrameIndex;
+/// 当前循环数
 @property (nonatomic, assign, readwrite) NSUInteger currentLoopCount;
+/// 动画Provider
 @property (nonatomic, strong) id<SDAnimatedImageProvider> animatedProvider;
+/// 帧缓存
 @property (nonatomic, strong) NSMutableDictionary<NSNumber *, UIImage *> *frameBuffer;
+/// 当前时间
 @property (nonatomic, assign) NSTimeInterval currentTime;
+/// 缓存丢失
 @property (nonatomic, assign) BOOL bufferMiss;
+/// 当图像可用时需要展示
 @property (nonatomic, assign) BOOL needsDisplayWhenImageBecomesAvailable;
+/// 是否应该倒放
 @property (nonatomic, assign) BOOL shouldReverse;
+/// 最大缓存数量
 @property (nonatomic, assign) NSUInteger maxBufferCount;
+/// 捕获队列
 @property (nonatomic, strong) NSOperationQueue *fetchQueue;
+/// 展示链接
 @property (nonatomic, strong) SDDisplayLink *displayLink;
 
 @end
