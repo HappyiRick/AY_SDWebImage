@@ -63,7 +63,7 @@ static const CGFloat kDestSeemOverlap = 2.0f;   // the numbers of pixels to over
     /// 生成临时变量保存总时长
     __block NSUInteger totalDuration = 0;
     /// 生成临时变量保存动图数组
-    NSMutableArray<UIImage *> *animatedImages = [NSMutableArray arrayWithCapacity:frameCount];、
+    NSMutableArray<UIImage *> *animatedImages = [NSMutableArray arrayWithCapacity:frameCount];
     /// 遍历传入的SDImageFrame对象数组
     [frames enumerateObjectsUsingBlock:^(SDImageFrame * _Nonnull frame, NSUInteger idx, BOOL * _Nonnull stop) {
         /// 获取SDImageFrame对象保存的每一帧的图像

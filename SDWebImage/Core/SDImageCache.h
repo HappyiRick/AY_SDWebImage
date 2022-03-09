@@ -149,8 +149,7 @@ typedef NS_OPTIONS(NSUInteger, SDImageCacheOptions) {
  * 用指定的命名空间初始化一个新的缓存实例
  * 最终的磁盘缓存目录应该类似于($directory/$namespace)。共享缓存的默认配置应该会导致(~/Library/Caches/com.hackemist.SDImageCache/default/)
  *
- * @param ns The namespace to use for this cache store
- * @param ns 为缓存存储的命名空间
+ * @param ns The namespace to use for this cache store 为缓存存储的命名空间
  */
 - (nonnull instancetype)initWithNamespace:(nonnull NSString *)ns;
 
@@ -160,10 +159,8 @@ typedef NS_OPTIONS(NSUInteger, SDImageCacheOptions) {
  * 用指定的命名空间和目录初始化一个新的缓存实例
  * 最终的磁盘缓存目录应该类似于($directory/$namespace)。共享缓存的默认配置应该会是(~/Library/Caches/com.hackemist.SDImageCache/default/)
  *
- * @param ns        The namespace to use for this cache store
- * @param directory Directory to cache disk images in
- * @param ns 缓存存储的命名空间
- * @param directory 用来存储硬盘图片的目录
+ * @param ns        The namespace to use for this cache store 缓存存储的命名空间
+ * @param directory Directory to cache disk images in 用来存储硬盘图片的目录
  */
 - (nonnull instancetype)initWithNamespace:(nonnull NSString *)ns
                        diskCacheDirectory:(nullable NSString *)directory;
@@ -174,12 +171,9 @@ typedef NS_OPTIONS(NSUInteger, SDImageCacheOptions) {
  * 用指定的命名空间，目录和配置初始化一个新的缓存存储
  * 最终的磁盘缓存目录应该类似于($directory/$namespace)。共享缓存的默认配置应该会是(~/Library/Caches/com.hackemist.SDImageCache/default/)
  *
- * @param ns          The namespace to use for this cache store
- * @param directory   Directory to cache disk images in
- * @param config      The cache config to be used to create the cache. You can provide custom memory cache or disk cache class in the cache config
- * @param ns 当前缓存对象的命名空间
- * @param directory 缓存硬盘图片的目录
- * @param config 用于创建缓存的缓存配置。你可以在缓存配置中提供自定义的内存缓存或磁盘缓存类
+ * @param ns          The namespace to use for this cache store // 当前缓存对象的命名空间
+ * @param directory   Directory to cache disk images in // 缓存硬盘图片的目录
+ * @param config      The cache config to be used to create the cache. You can provide custom memory cache or disk cache class in the cache config // 用于创建缓存的缓存配置。你可以在缓存配置中提供自定义的内存缓存或磁盘缓存类
  */
 - (nonnull instancetype)initWithNamespace:(nonnull NSString *)ns
                        diskCacheDirectory:(nullable NSString *)directory

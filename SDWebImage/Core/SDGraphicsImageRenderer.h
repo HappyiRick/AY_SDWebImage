@@ -65,31 +65,22 @@ typedef NS_ENUM(NSInteger, SDGraphicsImageRendererFormatRange) {
 @interface SDGraphicsImageRenderer : NSObject
 
 /// Creates an image renderer for drawing images of a given size.
-/// @param size The size of images output from the renderer, specified in points.
-/// @return An initialized image renderer.
 /// 创建用于绘制给定大小的图像的图像渲染器
-/// @param size 从渲染器输出的图像的大小，以点指定.
+/// @param size The size of images output from the renderer, specified in points. // 从渲染器输出的图像的大小，以点指定.
+/// @return An initialized image renderer.
 /// @return 一个初始化的图像渲染器
 - (nonnull instancetype)initWithSize:(CGSize)size;
 
-/// Creates a new image renderer with a given size and format.
-/// @param size The size of images output from the renderer, specified in points.
-/// @param format A SDGraphicsImageRendererFormat object that encapsulates the format used to create the renderer context.
-/// @return An initialized image renderer.
-/// 用给定的大小和格式创建一个新的图像渲染器
-/// @param size 从渲染器输出的图像的大小，以点指定
-/// @param format 一个SDGraphicsImageRendererFormat对象，它封装了用于创建渲染器上下文的格式
-/// @return 一个初始化的图像渲染器
+/// Creates a new image renderer with a given size and format. // 用给定的大小和格式创建一个新的图像渲染器
+/// @param size The size of images output from the renderer, specified in points. // 从渲染器输出的图像的大小，以点指定
+/// @param format A SDGraphicsImageRendererFormat object that encapsulates the format used to create the renderer context. // 一个SDGraphicsImageRendererFormat对象，它封装了用于创建渲染器上下文的格式
+/// @return An initialized image renderer. // 一个初始化的图像渲染器
 - (nonnull instancetype)initWithSize:(CGSize)size format:(nonnull SDGraphicsImageRendererFormat *)format;
 
-/// Creates an image by following a set of drawing instructions.
-/// @param actions A SDGraphicsImageDrawingActions block that, when invoked by the renderer, executes a set of drawing instructions to create the output image.
-/// @note You should not retain or use the context outside the block, it's non-escaping.
-/// @return A UIImage object created by the supplied drawing actions.
-/// 按照一组绘图说明创建图像
-/// @param actions 一个SDGraphicsImageDrawingActions块，当被渲染器调用时，执行一组绘图指令来创建输出图像
-/// @note 你不应该保留或使用区块外的上下文，它是非转义的
-/// @return 一个由提供的绘图动作创建的UIImage对象
+/// Creates an image by following a set of drawing instructions. // 按照一组绘图说明创建图像
+/// @param actions A SDGraphicsImageDrawingActions block that, when invoked by the renderer, executes a set of drawing instructions to create the output image. // 一个SDGraphicsImageDrawingActions块，当被渲染器调用时，执行一组绘图指令来创建输出图像
+/// @note You should not retain or use the context outside the block, it's non-escaping. // 你不应该保留或使用区块外的上下文，它是非转义的
+/// @return A UIImage object created by the supplied drawing actions. // 一个由提供的绘图动作创建的UIImage对象
 - (nonnull UIImage *)imageWithActions:(nonnull NS_NOESCAPE SDGraphicsImageDrawingActions)actions;
 
 @end
